@@ -190,12 +190,36 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
 async function handleX10Action(ctx: Context, action: string): Promise<void> {
   switch (action) {
     case 'join':
-      const joinMessage = '🚀 *Click here to join the X10 Challenge now!* 🚀\n\n[JOIN THE TNETC COMMUNITY](https://t.me/tnetccommunity/186)';
+      await ctx.reply('🚀 *JOIN THE X10 CHALLENGE NOW!* 🚀', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '🔥 JOIN THE TNETC COMMUNITY 🔥', url: 'https://t.me/tnetccommunity/186' }
+          ]]
+        }
+      });
       await ctx.reply(joinMessage, { parse_mode: 'Markdown' });
       break;
     
     case 'details':
-      await ctx.replyWithMarkdown('*🎯 X10 Challenge Details*\n\n• 10x your trading account in 30 days\n• Follow our expert traders\' signals\n• Complete trading plan provided\n• Daily support and guidance\n• Access to proprietary strategies');
+      await ctx.replyWithMarkdown(
+        "*🔥 X10 CHALLENGE - FINAL 17 SPOTS AVAILABLE! 🔥*\n\n" +
+        "*⚠️ WARNING: This offer is closing THIS WEEK ⚠️*\n\n" +
+        "Our exclusive X10 Challenge has helped members achieve incredible results:\n\n" +
+        "✅ Previous challenge: *10X account growth in just 66 days*\n" +
+        "✅ Members reporting $500-$3,000+ profits weekly\n" +
+        "✅ Step-by-step guidance from professional traders\n" +
+        "✅ Proven strategy with 94% win rate\n\n" +
+        "*WHAT YOU GET:*\n" +
+        "• Access to exclusive challenge group\n" +
+        "• Premium signals (not available elsewhere)\n" +
+        "• 1-on-1 strategy coaching\n" +
+        "• Daily trade opportunities\n\n" +
+        "*ORIGINAL PRICE: $350*\n" +
+        "*CURRENT PRICE: $0 (FREE)*\n\n" +
+        "*⏰ ONLY 17 SPOTS REMAIN - OFFER ENDS THIS WEEK!*\n" +
+        "Our last batch of members filled within 24 hours. Don't miss this opportunity!"
+      );
       break;
     
     case 'success':
@@ -226,9 +250,8 @@ async function handleCopytradeAction(ctx: Context, action: string): Promise<void
       break;
     
     case 'start':
-      await handleServicePricing(ctx, ServiceType.COPYTRADE);
+      await ctx.replyWithMarkdown('*📱 Contact Support to Start Copytrading*\n\nTo begin your copytrading journey, please contact our support team at https://t.me/m/KAYFGGyMYzk1. Our team will guide you through the setup process and answer any questions you may have.');
       break;
-    
     case 'howItWorks':
       await handleHowItWorks(ctx, ServiceType.COPYTRADE);
       break;
