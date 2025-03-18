@@ -24,17 +24,19 @@ export enum UserState {
 }
 
 export interface UserData {
-  id: number;
+  id: string;
   username?: string;
   firstName?: string;
   lastName?: string;
   entryPoint: EntryPoint;
   state: UserState;
+  lastVisit: number;
+  services: ServiceType[];
+  campaignId: string;
   selectedService?: ServiceType;
-  lastActive: Date;
-  followUpScheduled?: boolean;
-  testimonialsSent: number;
-  purchasedServices: ServiceType[];
-  createdAt: Date;
-  updatedAt: Date;
+  lastActive?: Date;
+  testimonialsSent?: number;
+  purchasedServices?: ServiceType[];
+  createdAt?: Date;
+  updatedAt?: Date;
 } 

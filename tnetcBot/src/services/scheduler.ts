@@ -82,8 +82,9 @@ class SchedulerService {
       const user = await database.getUser(userId);
       if (!user) return;
 
-      // Check if user has already purchased the service
-      if (user.purchasedServices.includes(serviceType)) {
+      // Check if user has already purchased this service
+      if (user.purchasedServices && user.purchasedServices.includes(serviceType)) {
+        console.log(`User ${userId} already purchased ${serviceType}. Not scheduling follow-ups.`);
         return;
       }
 

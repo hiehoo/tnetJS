@@ -65,6 +65,14 @@ export class Helpers {
   }
 
   /**
+   * Generate a unique ID (used for campaign IDs, etc.)
+   */
+  static idGenerator(): string {
+    return Math.random().toString(36).substring(2, 15) + 
+           Math.random().toString(36).substring(2, 15);
+  }
+
+  /**
    * Get remaining spots message with urgency
    */
   static getRemainingSpotsMessage(spots: number): string {

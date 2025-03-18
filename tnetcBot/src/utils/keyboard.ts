@@ -13,36 +13,66 @@ export class KeyboardUtils {
   static getServicesKeyboard() {
     const buttons: InlineKeyboardButton[][] = [];
     
-    // Add X10 Challenge and Copytrade in the first row
-    const row1 = [
-      Markup.button.callback(
-        `🚀 X10 CHALLENGE (${SERVICES[ServiceType.X10_CHALLENGE].limitedSlots} SLOTS LEFT)`, 
-        `service:${ServiceType.X10_CHALLENGE}`
-      )
-    ];
-    buttons.push(row1);
+    try {
+      // Add X10 Challenge in the first row
+      const x10Challenge = SERVICES[ServiceType.X10_CHALLENGE];
+      if (x10Challenge) {
+        const row1 = [
+          Markup.button.callback(
+            `🚀 X10 CHALLENGE (${x10Challenge.limitedSlots || 'LIMITED'} SLOTS LEFT)`, 
+            `service:${ServiceType.X10_CHALLENGE}`
+          )
+        ];
+        buttons.push(row1);
+      }
 
-    // Add Signal service in the second row
-    const row2 = [
-      Markup.button.callback(
-        `📱 PREMIUM SIGNALS (${SERVICES[ServiceType.SIGNAL].limitedTime})`, 
-        `service:${ServiceType.SIGNAL}`
-      ),
-      Markup.button.callback(
-        `💸 COPYTRADE (${SERVICES[ServiceType.COPYTRADE].limitedTime})`, 
-        `service:${ServiceType.COPYTRADE}`
-      )
-    ];
-    buttons.push(row2);
+      // Add Signal and Copytrade services in the second row
+      const signal = SERVICES[ServiceType.SIGNAL];
+      const copytrade = SERVICES[ServiceType.COPYTRADE];
+      
+      const row2 = [];
+      
+      if (signal) {
+        row2.push(
+          Markup.button.callback(
+            `📱 PREMIUM SIGNALS (${signal.limitedTime || 'LIMITED TIME'})`, 
+            `service:${ServiceType.SIGNAL}`
+          )
+        );
+      }
+      
+      if (copytrade) {
+        row2.push(
+          Markup.button.callback(
+            `💸 COPYTRADE (${copytrade.limitedTime || 'LIMITED TIME'})`, 
+            `service:${ServiceType.COPYTRADE}`
+          )
+        );
+      }
+      
+      if (row2.length > 0) {
+        buttons.push(row2);
+      }
 
-    // Add VIP package in the third row
-    const row3 = [
-      Markup.button.callback(
-        `🏆 VIP PACKAGE (ONLY ${SERVICES[ServiceType.VIP].limitedSlots} SPOTS)`, 
-        `service:${ServiceType.VIP}`
-      )
-    ];
-    buttons.push(row3);
+      // Add VIP package in the third row
+      const vip = SERVICES[ServiceType.VIP];
+      if (vip) {
+        const row3 = [
+          Markup.button.callback(
+            `🏆 VIP PACKAGE (ONLY ${vip.limitedSlots || 'LIMITED'} SPOTS)`, 
+            `service:${ServiceType.VIP}`
+          )
+        ];
+        buttons.push(row3);
+      }
+    } catch (error) {
+      console.error('Error creating services keyboard:', error);
+      
+      // Fallback to a simple keyboard if there's an error
+      buttons.push([
+        Markup.button.callback('🚀 Trading Services', 'service:x10_challenge')
+      ]);
+    }
 
     return Markup.inlineKeyboard(buttons);
   }
@@ -243,5 +273,14 @@ export class KeyboardUtils {
     }
 
     return Markup.inlineKeyboard(buttons);
+  }
+
+  /**
+   * Create a keyboard for retrying welcome flow
+   */
+  static getRetryWelcomeKeyboard() {
+    return Markup.inlineKeyboard([
+      [Markup.button.callback('🔄 Try Again', 'retry_welcome')]
+    ]);
   }
 } 

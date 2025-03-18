@@ -1,4 +1,5 @@
 import { EntryPoint, FollowUpInfo, ServiceType, UserData, UserState } from '../types';
+import { Helpers } from '../utils/helpers';
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
@@ -11,7 +12,7 @@ class DatabaseService {
     // Create data directory if it doesn't exist
     const dataDir = path.join(process.cwd(), 'data');
     if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir);
+      fs.mkdirSync(dataDir, { recursive: true });
     }
     
     // Initialize SQLite database
@@ -26,24 +27,27 @@ class DatabaseService {
     // Users table
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
+        id TEXT PRIMARY KEY,
         username TEXT,
         firstName TEXT,
         lastName TEXT,
         entryPoint TEXT NOT NULL,
         state TEXT NOT NULL,
         selectedService TEXT,
-        lastActive TEXT NOT NULL,
+        lastVisit INTEGER NOT NULL,
+        lastActive TEXT,
+        services TEXT DEFAULT '[]',
+        campaignId TEXT,
         testimonialsSent INTEGER DEFAULT 0,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
+        createdAt TEXT,
+        updatedAt TEXT
       )
     `);
 
     // User purchased services table (many-to-many relationship)
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS user_services (
-        userId INTEGER NOT NULL,
+        userId TEXT NOT NULL,
         serviceType TEXT NOT NULL,
         purchasedAt TEXT NOT NULL,
         PRIMARY KEY (userId, serviceType),
@@ -55,7 +59,7 @@ class DatabaseService {
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS follow_ups (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER NOT NULL,
+        userId TEXT NOT NULL,
         serviceType TEXT NOT NULL,
         messageNumber INTEGER,
         sentAt TEXT,
@@ -107,7 +111,7 @@ class DatabaseService {
     `);
     
     // Execute query
-    const userRow = stmt.get(userId) as any;
+    const userRow = stmt.get(userId.toString()) as any;
     
     if (!userRow) return undefined;
     
@@ -122,12 +126,15 @@ class DatabaseService {
       lastName: userRow.lastName,
       entryPoint: userRow.entryPoint as EntryPoint,
       state: userRow.state as UserState,
+      lastVisit: userRow.lastVisit,
+      services: userRow.services ? JSON.parse(userRow.services) : [],
+      campaignId: userRow.campaignId || Helpers.idGenerator(),
       selectedService: userRow.selectedService as ServiceType | undefined,
-      lastActive: new Date(userRow.lastActive),
-      testimonialsSent: userRow.testimonialsSent,
-      purchasedServices,
-      createdAt: new Date(userRow.createdAt),
-      updatedAt: new Date(userRow.updatedAt)
+      lastActive: userRow.lastActive ? new Date(userRow.lastActive) : undefined,
+      testimonialsSent: userRow.testimonialsSent || 0,
+      purchasedServices: purchasedServices,
+      createdAt: userRow.createdAt ? new Date(userRow.createdAt) : undefined,
+      updatedAt: userRow.updatedAt ? new Date(userRow.updatedAt) : undefined
     };
   }
 
@@ -136,7 +143,7 @@ class DatabaseService {
       SELECT serviceType FROM user_services WHERE userId = ?
     `);
     
-    const rows = stmt.all(userId) as any[];
+    const rows = stmt.all(userId.toString()) as any[];
     return rows.map(row => row.serviceType as ServiceType);
   }
 
@@ -147,35 +154,53 @@ class DatabaseService {
     firstName?: string,
     lastName?: string
   ): Promise<UserData> {
-    const now = new Date().toISOString();
+    const now = Date.now();
+    const nowDate = new Date();
+    const campaignId = Helpers.idGenerator();
     
     // Prepare statement
     const stmt = this.db.prepare(`
       INSERT INTO users (
         id, username, firstName, lastName, entryPoint, 
-        state, lastActive, testimonialsSent, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        state, lastVisit, lastActive, services, campaignId,
+        testimonialsSent, createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     
     // Execute insert
     stmt.run(
-      userId,
+      userId.toString(),
+      username || null,
+      firstName || null,
+      lastName || null,
+      entryPoint,
+      UserState.NEW,
+      now,
+      nowDate.toISOString(),
+      JSON.stringify([]),
+      campaignId,
+      0,
+      nowDate.toISOString(),
+      nowDate.toISOString()
+    );
+    
+    // Return the created user
+    const userData: UserData = {
+      id: userId.toString(),
       username,
       firstName,
       lastName,
       entryPoint,
-      UserState.NEW,
-      now,
-      0,
-      now,
-      now
-    );
-    
-    // Return the created user
-    const userData = await this.getUser(userId);
-    if (!userData) {
-      throw new Error(`Failed to create user with ID ${userId}`);
-    }
+      state: UserState.NEW,
+      lastVisit: now,
+      services: [],
+      campaignId,
+      lastActive: nowDate,
+      testimonialsSent: 0,
+      purchasedServices: [],
+      createdAt: nowDate,
+      updatedAt: nowDate
+    };
     
     return userData;
   }
@@ -187,30 +212,43 @@ class DatabaseService {
       throw new Error(`User with ID ${userId} not found.`);
     }
     
+    // Update the timestamp
+    const now = new Date();
+    
     // Start transaction
     const transaction = this.db.transaction(() => {
       // Update user table fields
       const userFieldsToUpdate = [
         'username', 'firstName', 'lastName', 'entryPoint', 
-        'state', 'selectedService', 'lastActive', 'testimonialsSent'
+        'state', 'selectedService', 'lastVisit', 'services',
+        'campaignId', 'testimonialsSent'
       ];
       
       const fieldsToSet: string[] = [];
       const values: any[] = [];
       
+      // Add lastActive if present
+      if (updates.lastActive) {
+        fieldsToSet.push('lastActive = ?');
+        values.push(updates.lastActive.toISOString());
+      }
+      
       userFieldsToUpdate.forEach(field => {
         if (field in updates) {
           fieldsToSet.push(`${field} = ?`);
-          values.push((updates as any)[field]);
+          const value = field === 'services' && Array.isArray(updates.services) 
+            ? JSON.stringify(updates.services)
+            : (updates as any)[field];
+          values.push(value);
         }
       });
       
       // Add updatedAt field
       fieldsToSet.push('updatedAt = ?');
-      values.push(new Date().toISOString());
+      values.push(now.toISOString());
       
       // Add userId for WHERE clause
-      values.push(userId);
+      values.push(userId.toString());
       
       // Execute update if there are fields to update
       if (fieldsToSet.length > 0) {
@@ -241,10 +279,8 @@ class DatabaseService {
             VALUES (?, ?, ?)
           `);
           
-          const now = new Date().toISOString();
-          
           for (const service of servicesToAdd) {
-            insertServiceStmt.run(userId, service, now);
+            insertServiceStmt.run(userId.toString(), service, now.toISOString());
             
             // Update service stats
             this.incrementServiceStat(service);
@@ -256,7 +292,7 @@ class DatabaseService {
     // Execute transaction
     transaction();
     
-    // Return updated user
+    // Return updated user - get fresh from database
     const updatedUser = await this.getUser(userId);
     if (!updatedUser) {
       throw new Error(`Failed to update user with ID ${userId}`);
@@ -285,7 +321,7 @@ class DatabaseService {
     // Get full user data for each ID
     const users: UserData[] = [];
     for (const row of rows) {
-      const user = await this.getUser(row.id);
+      const user = await this.getUser(parseInt(row.id));
       if (user) users.push(user);
     }
     
@@ -305,7 +341,7 @@ class DatabaseService {
     // Get full user data for each ID
     const users: UserData[] = [];
     for (const row of rows) {
-      const user = await this.getUser(row.id);
+      const user = await this.getUser(parseInt(row.id));
       if (user) users.push(user);
     }
     
@@ -322,7 +358,7 @@ class DatabaseService {
     `);
     
     const result = stmt.run(
-      followUp.userId,
+      followUp.userId.toString(),
       followUp.serviceType,
       followUp.messageNumber || null,
       followUp.sentAt ? followUp.sentAt.toISOString() : null,
@@ -346,7 +382,7 @@ class DatabaseService {
       SELECT * FROM follow_ups WHERE userId = ?
     `);
     
-    const rows = stmt.all(userId) as any[];
+    const rows = stmt.all(userId.toString()) as any[];
     
     // Convert rows to FollowUpInfo objects
     return rows.map(row => ({
@@ -369,7 +405,7 @@ class DatabaseService {
       ORDER BY id DESC LIMIT 1
     `);
     
-    const row = stmt.get(userId, serviceType) as any;
+    const row = stmt.get(userId.toString(), serviceType) as any;
     
     if (!row) return undefined;
     
@@ -444,7 +480,7 @@ class DatabaseService {
       WHERE userId = ?
     `);
     
-    stmt.run(userId);
+    stmt.run(userId.toString());
   }
 
   // Stats methods
@@ -480,7 +516,7 @@ class DatabaseService {
   }
   
   // Close database connection
-  close(): void {
+  closeConnection(): void {
     this.db.close();
   }
 
@@ -498,9 +534,16 @@ class DatabaseService {
         const insertUserStmt = this.db.prepare(`
           INSERT OR IGNORE INTO users (
             id, username, firstName, lastName, entryPoint, state,
-            selectedService, lastActive, testimonialsSent, createdAt, updatedAt
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            selectedService, lastVisit, lastActive, services, campaignId,
+            testimonialsSent, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
+        
+        const lastActive = user.lastActive?.toISOString() || null;
+        const services = JSON.stringify(user.services || []);
+        const testimonialsSent = user.testimonialsSent || 0;
+        const createdAt = user.createdAt?.toISOString() || null;
+        const updatedAt = user.updatedAt?.toISOString() || null;
         
         insertUserStmt.run(
           user.id,
@@ -510,14 +553,17 @@ class DatabaseService {
           user.entryPoint,
           user.state,
           user.selectedService,
-          user.lastActive.toISOString(),
-          user.testimonialsSent,
-          user.createdAt.toISOString(),
-          user.updatedAt.toISOString()
+          user.lastVisit,
+          lastActive,
+          services,
+          user.campaignId,
+          testimonialsSent,
+          createdAt,
+          updatedAt
         );
         
         // Insert purchased services
-        if (user.purchasedServices.length > 0) {
+        if (user.purchasedServices && user.purchasedServices.length > 0) {
           const insertServiceStmt = this.db.prepare(`
             INSERT OR IGNORE INTO user_services (userId, serviceType, purchasedAt)
             VALUES (?, ?, ?)
@@ -527,7 +573,7 @@ class DatabaseService {
             insertServiceStmt.run(
               user.id,
               service,
-              user.updatedAt.toISOString()
+              updatedAt || new Date().toISOString()
             );
             
             // Update service stats
@@ -546,7 +592,7 @@ class DatabaseService {
         `);
         
         insertFollowUpStmt.run(
-          followUp.userId,
+          followUp.userId.toString(),
           followUp.serviceType,
           followUp.messageNumber || null,
           followUp.sentAt ? followUp.sentAt.toISOString() : null,

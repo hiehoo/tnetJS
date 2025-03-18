@@ -1,82 +1,107 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { ServiceInfo, ServiceType, TestimonialInfo } from './types';
 
+// Load environment variables
 dotenv.config();
 
-export const BOT_TOKEN = process.env.BOT_TOKEN || '';
+// Bot configuration
+export const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
 export const ADMIN_USER_ID = Number(process.env.ADMIN_USER_ID) || 0;
 export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+// Webhook configuration (for production)
+export const USE_WEBHOOK = IS_PRODUCTION;
+export const WEBHOOK_DOMAIN = process.env.WEBHOOK_DOMAIN || 'https://your-app-domain.com';
+export const WEBHOOK_PORT = parseInt(process.env.PORT || '3000', 10);
 
 // Service Information
 export const SERVICES: Record<ServiceType, ServiceInfo> = {
   [ServiceType.SIGNAL]: {
     id: ServiceType.SIGNAL,
     name: 'Premium Forex Signals',
-    description: 'Receive high-quality trading signals with 92% win rate directly to your phone',
-    price: 149,
+    description: 'High probability trading signals delivered directly to your phone',
+    price: 199,
     discountPrice: 99,
-    features: [
-      '5-10 Signals Daily',
-      '92% Win Rate',
-      'All Pairs Covered',
-      'Entry/Stop/Target Details',
-      'Market Analysis',
-      '24/7 Support Channel'
+    limitedTime: '48 hours',
+    limitedSlots: 15,
+    resultImages: [
+      'assets/results/signal_results_1.jpg',
+      'assets/results/signal_results_2.jpg'
     ],
-    limitedTime: 'This week only',
-    resultImages: ['assets/results/ea_results_1.jpg', 'assets/results/ea_results_2.jpg'],
+    features: [
+      'Professional trade signals with 92% win rate',
+      'Entry, stop loss, and take profit levels',
+      'Up to 10 signals per day',
+      'Advanced risk management advice',
+      'Full mobile compatibility',
+      'Daily market analysis and insights',
+      'Private VIP Telegram group access'
+    ],
     testimonialImages: ['assets/testimonials/testimonial_1.jpg', 'assets/testimonials/testimonial_2.jpg']
   },
   [ServiceType.VIP]: {
     id: ServiceType.VIP,
-    name: 'VIP Trading Package',
-    description: 'All-inclusive VIP package with signals, and exclusive community access',
-    price: 2999,
-    discountPrice: 1999,
-    features: [
-      'VIP Signals Channel',
-      'Private Community Access',
-      'Weekly Live Sessions',
-      'Priority Support',
-      'Custom Strategy Guidance'
-    ],
+    name: 'VIP Package',
+    description: 'Complete trading ecosystem including signals, community, and education',
+    price: 499,
+    discountPrice: 299,
     limitedSlots: 5,
-    resultImages: ['assets/results/copytrade_results_1.jpg', 'assets/results/copytrade_results_2.jpg'],
+    resultImages: [
+      'assets/results/vip_results_1.jpg',
+      'assets/results/vip_results_2.jpg'
+    ],
+    features: [
+      'All Premium Signals included',
+      'Access to private VIP community',
+      'Weekly live trading sessions',
+      'Direct access to expert traders',
+      'Priority 24/7 support',
+      'Detailed market forecasts',
+      'Performance tracking and analysis'
+    ],
     testimonialImages: ['assets/testimonials/testimonial_3.jpg', 'assets/testimonials/testimonial_4.jpg']
   },
   [ServiceType.X10_CHALLENGE]: {
     id: ServiceType.X10_CHALLENGE,
     name: 'X10 Challenge',
-    description: 'Join our exclusive X10 Challenge and multiply your account by 10x in 30 days',
+    description: 'Multiply your trading account 10X in 66 days',
     price: 0,
-    features: [
-      'Free Access for Limited Time',
-      'Daily Signals',
-      '30-Day Challenge',
-      'Community Support',
-      'Performance Tracking'
+    limitedSlots: 12,
+    resultImages: [
+      'assets/results/x10_results_1.jpg',
+      'assets/results/x10_results_2.jpg'
     ],
-    limitedSlots: 17,
-    limitedTime: '24 hours',
-    resultImages: ['assets/results/x10_results_1.jpg', 'assets/results/x10_results_2.jpg'],
+    features: [
+      'Step-by-step trading plan',
+      'Daily guidance from expert traders',
+      'Proven strategy with historical results',
+      'Risk management framework',
+      'Account monitoring and feedback',
+      'Special trades only for challengers',
+      'Certificate upon completion'
+    ],
     testimonialImages: ['assets/testimonials/testimonial_5.jpg']
   },
   [ServiceType.COPYTRADE]: {
     id: ServiceType.COPYTRADE,
-    name: 'Copytrade Service',
-    description: 'Copy our expert traders automatically with our copytrade service',
-    price: 249,
-    discountPrice: 0,
-    features: [
-      'Fully Automated Trading',
-      '85% Win Rate',
-      'Multiple Strategies',
-      'Conservative Risk Settings',
-      'Daily Performance Updates',
-      'Flexible Investment Amount'
+    name: 'Lifetime Copytrade',
+    description: 'Automatically copy trades from our expert traders',
+    price: 299,
+    discountPrice: 199,
+    limitedTime: '72 hours',
+    resultImages: [
+      'assets/results/copytrade_results_1.jpg',
+      'assets/results/copytrade_results_2.jpg'
     ],
-    limitedTime: 'FINAL FREE OFFER',
-    resultImages: ['assets/results/copytrade_results_1.jpg', 'assets/results/copytrade_results_2.jpg'],
+    features: [
+      'Fully automated trading',
+      'Trades copied in real-time',
+      'Adjustable risk settings',
+      'Works with any broker',
+      'No technical skills required',
+      'Performance statistics dashboard',
+      'Lifetime access to the service'
+    ],
     testimonialImages: ['assets/testimonials/testimonial_6.jpg']
   }
 };
@@ -132,4 +157,15 @@ export const FOLLOW_UP_TIMING = {
   FIRST_MESSAGE: 24,
   SECOND_MESSAGE: 48,
   FINAL_MESSAGE: 72
+};
+
+// Export a config object for easier imports
+export const config = {
+  BOT_TOKEN,
+  ADMIN_USER_ID,
+  IS_PRODUCTION,
+  USE_WEBHOOK,
+  WEBHOOK_DOMAIN,
+  WEBHOOK_PORT,
+  SERVICES
 }; 
