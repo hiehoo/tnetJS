@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TNETC Trading Bot - Project Structure
+
+```
+tnetc-bot/
+├── src/
+│   ├── index.ts                 # Entry point
+│   ├── bot.ts                   # Bot initialization
+│   ├── config.ts                # Configuration
+│   ├── types/                   # TypeScript types
+│   │   ├── index.ts             # Type exports
+│   │   ├── user.ts              # User types
+│   │   └── services.ts          # Service types
+│   ├── handlers/                # Command handlers
+│   │   ├── index.ts             # Handler exports
+│   │   ├── start.ts             # Start command handler
+│   │   ├── services.ts          # Service selection handler
+│   │   └── callbacks.ts         # Callback query handler
+│   ├── flows/                   # User flows
+│   │   ├── index.ts             # Flow exports
+│   │   ├── welcome.ts           # Welcome messages
+│   │   ├── ea.ts                # EA trading flow
+│   │   ├── signals.ts           # Signal trading flow
+│   │   ├── vip.ts               # VIP flow
+│   │   ├── x10challenge.ts      # X10 Challenge flow
+│   │   └── copytrade.ts         # Copytrade flow
+│   ├── services/                # Core services
+│   │   ├── database.ts          # User data storage
+│   │   ├── testimonials.ts      # Testimonial system
+│   │   ├── scheduler.ts         # Follow-up scheduler
+│   │   └── stats.ts             # Trading stats generator
+│   └── utils/                   # Utilities
+│       ├── keyboard.ts          # Inline keyboard creator
+│       ├── messages.ts          # Message templates
+│       └── helpers.ts           # Helper functions
+├── assets/                      # Static assets
+│   ├── testimonials/            # Testimonial images
+│   ├── results/                 # Trading results images
+│   └── service-info/            # Service info images
+├── package.json                 # Dependencies
+├── tsconfig.json                # TypeScript config
+├── .env                         # Environment variables
+└── README.md                    # Documentation
+```

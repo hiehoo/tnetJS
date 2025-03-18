@@ -1,0 +1,27 @@
+{
+  "name": "tnetcbot",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "keywords": ["telegram", "bot", "trading"],
+  "author": "",
+  "license": "ISC",
+  "description": "TNETC Trading Bot",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-schedule": "^2.1.1",
+    "telegraf": "^4.12.2",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.7",
+    "@types/node-schedule": "^2.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
