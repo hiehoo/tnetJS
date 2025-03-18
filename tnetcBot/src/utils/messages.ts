@@ -202,7 +202,7 @@ export class MessageTemplates {
     const serviceInfo = SERVICES[service];
     
     message = `🎉 *CONGRATULATIONS!* 🎉\n\n`;
-    message += `You've successfully purchased our *${serviceInfo.name}*!\n\n`;
+    message += `You've successfully joined our *${serviceInfo.name}*!\n\n`;
     
     // Setup instructions
     message += `*NEXT STEPS:*\n\n`;

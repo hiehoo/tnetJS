@@ -18,10 +18,6 @@ export class KeyboardUtils {
       Markup.button.callback(
         `🚀 X10 CHALLENGE (${SERVICES[ServiceType.X10_CHALLENGE].limitedSlots} SLOTS LEFT)`, 
         `service:${ServiceType.X10_CHALLENGE}`
-      ),
-      Markup.button.callback(
-        `💸 COPYTRADE (${SERVICES[ServiceType.COPYTRADE].limitedTime})`, 
-        `service:${ServiceType.COPYTRADE}`
       )
     ];
     buttons.push(row1);
@@ -31,6 +27,10 @@ export class KeyboardUtils {
       Markup.button.callback(
         `📱 PREMIUM SIGNALS (${SERVICES[ServiceType.SIGNAL].limitedTime})`, 
         `service:${ServiceType.SIGNAL}`
+      ),
+      Markup.button.callback(
+        `💸 COPYTRADE (${SERVICES[ServiceType.COPYTRADE].limitedTime})`, 
+        `service:${ServiceType.COPYTRADE}`
       )
     ];
     buttons.push(row2);
@@ -91,14 +91,14 @@ export class KeyboardUtils {
   static getX10ChallengeKeyboard() {
     return Markup.inlineKeyboard([
       [
+        Markup.button.callback('🚀 JOIN CHALLENGE NOW! 🚀', 'x10:join')
+      ],
+      [
         Markup.button.callback('🎯 Challenge Details', 'x10:details'),
         Markup.button.callback('📊 Success Stories', 'x10:success')
       ],
       [
-        Markup.button.callback('🚀 Join Challenge', 'x10:join'),
-        Markup.button.callback('❓ How It Works', 'x10:howItWorks')
-      ],
-      [
+        Markup.button.callback('❓ How It Works', 'x10:howItWorks'),
         Markup.button.callback('🔙 Back to Services', 'back:services')
       ]
     ]);

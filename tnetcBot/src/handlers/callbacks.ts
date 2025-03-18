@@ -95,6 +95,8 @@ function handleSignalAction(ctx: Context, param: string): void {
   switch (param) {
     case 'results':
       handleServiceResults(ctx, ServiceType.SIGNAL);
+      // Send results image
+      ctx.replyWithPhoto({ source: './assets/results/copytrade_results_1.jpg' });
       break;
     case 'stats':
       // Show signal stats
@@ -142,15 +144,39 @@ function handleVIPAction(ctx: Context, param: string): void {
         "✅ Custom Strategy Consultation\n\n" +
         "The VIP Package is our most comprehensive offering for serious traders."
       );
+      // Add contact support message
+      ctx.replyWithMarkdown(
+        "💰 *GET VIP ACCESS NOW* 💰\n\n" +
+        "To purchase the VIP package, please contact our support team for payment instructions:\n\n" +
+        "[👉 CONTACT SUPPORT FOR PAYMENT 👈](https://t.me/m/DvGbHx0NZTFl)"
+      );
       break;
     case 'performance':
       handleServiceResults(ctx, ServiceType.VIP);
+      // Add contact support message
+      ctx.replyWithMarkdown(
+        "💰 *GET VIP ACCESS NOW* 💰\n\n" +
+        "To purchase the VIP package, please contact our support team for payment instructions:\n\n" +
+        "[👉 CONTACT SUPPORT FOR PAYMENT 👈](https://t.me/m/DvGbHx0NZTFl)"
+      );
       break;
     case 'features':
       handleHowItWorks(ctx, ServiceType.VIP);
+      // Add contact support message
+      ctx.replyWithMarkdown(
+        "💰 *GET VIP ACCESS NOW* 💰\n\n" +
+        "To purchase the VIP package, please contact our support team for payment instructions:\n\n" +
+        "[👉 CONTACT SUPPORT FOR PAYMENT 👈](https://t.me/m/DvGbHx0NZTFl)"
+      );
       break;
     case 'pricing':
       handleServicePricing(ctx, ServiceType.VIP);
+      // Add contact support message
+      ctx.replyWithMarkdown(
+        "💰 *GET VIP ACCESS NOW* 💰\n\n" +
+        "To purchase the VIP package, please contact our support team for payment instructions:\n\n" +
+        "[👉 CONTACT SUPPORT FOR PAYMENT 👈](https://t.me/m/DvGbHx0NZTFl)"
+      );
       break;
   }
 }
@@ -178,7 +204,13 @@ function handleX10Action(ctx: Context, param: string): void {
       handleHowItWorks(ctx, ServiceType.X10_CHALLENGE);
       break;
     case 'join':
-      handlePurchase(ctx, ServiceType.X10_CHALLENGE);
+      // Redirect user to the TNETC Community channel
+      ctx.replyWithMarkdown(
+        "🚀 *JOINING X10 CHALLENGE!* 🚀\n\n" +
+        "You're being redirected to our exclusive TNETC Community channel to complete your registration.\n\n" +
+        "Click the link below to join:\n" +
+        "[👉 JOIN TNETC COMMUNITY CHANNEL 👈](https://t.me/tnetccommunity/186)"
+      );
       break;
   }
 }
@@ -206,7 +238,13 @@ function handleCopytradeAction(ctx: Context, param: string): void {
       handleHowItWorks(ctx, ServiceType.COPYTRADE);
       break;
     case 'start':
-      handleServicePricing(ctx, ServiceType.COPYTRADE);
+      // Redirect user to chat with support
+      ctx.replyWithMarkdown(
+        "🔥 *TNETC COPYTRADE SERVICE* 🔥\n\n" +
+        "You're being redirected to our support team to set up your copytrade account.\n\n" +
+        "Click the link below to chat with our support team:\n" +
+        "[👉 CHAT WITH TNETC SUPPORT 👈](https://t.me/m/1Q0AzxOLNDY1)"
+      );
       break;
   }
 } 

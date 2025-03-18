@@ -31,8 +31,8 @@ export const SERVICES: Record<ServiceType, ServiceInfo> = {
     id: ServiceType.VIP,
     name: 'VIP Trading Package',
     description: 'All-inclusive VIP package with signals, and exclusive community access',
-    price: 299,
-    discountPrice: 199,
+    price: 2999,
+    discountPrice: 1999,
     features: [
       'VIP Signals Channel',
       'Private Community Access',
@@ -66,7 +66,7 @@ export const SERVICES: Record<ServiceType, ServiceInfo> = {
     name: 'Copytrade Service',
     description: 'Copy our expert traders automatically with our copytrade service',
     price: 249,
-    discountPrice: 149,
+    discountPrice: 0,
     features: [
       'Fully Automated Trading',
       '85% Win Rate',
