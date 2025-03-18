@@ -8,11 +8,17 @@
     "build": "tsc",
     "watch": "tsc -w"
   },
-  "keywords": ["telegram", "bot", "trading"],
+  "keywords": [
+    "telegram",
+    "bot",
+    "trading"
+  ],
   "author": "",
   "license": "ISC",
   "description": "TNETC Trading Bot",
   "dependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "better-sqlite3": "^11.9.1",
     "dotenv": "^16.3.1",
     "node-schedule": "^2.1.1",
     "telegraf": "^4.12.2",

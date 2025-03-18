@@ -1,5 +1,6 @@
 import bot from './bot';
 import { IS_PRODUCTION } from './config';
+import { database } from './services';
 
 // Start the bot
 async function startBot() {
@@ -21,8 +22,17 @@ async function startBot() {
     }
     
     // Enable graceful stop
-    process.once('SIGINT', () => bot.stop('SIGINT'));
-    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+    process.once('SIGINT', () => {
+      console.log('SIGINT signal received. Gracefully shutting down...');
+      bot.stop('SIGINT');
+      database.close();
+    });
+    
+    process.once('SIGTERM', () => {
+      console.log('SIGTERM signal received. Gracefully shutting down...');
+      bot.stop('SIGTERM');
+      database.close();
+    });
   } catch (error) {
     console.error('Error starting the bot:', error);
   }

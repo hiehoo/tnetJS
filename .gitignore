@@ -1,2 +1,6 @@
 /.env
 /supabase
+
+# SQLite database files
+data/*.db
+data/*.db-journal

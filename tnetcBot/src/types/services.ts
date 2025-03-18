@@ -21,6 +21,7 @@ export interface TestimonialInfo {
 }
 
 export interface FollowUpInfo {
+  id?: number;
   userId: number;
   serviceType: ServiceType;
   messageNumber?: number;
