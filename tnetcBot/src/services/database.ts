@@ -1,23 +1,29 @@
-import { EntryPoint, FollowUpInfo, ServiceType, UserData, UserState } from '../types';
-import { Helpers } from '../utils/helpers';
-import Database from 'better-sqlite3';
-import path from 'path';
-import fs from 'fs';
+import {
+  EntryPoint,
+  FollowUpInfo,
+  ServiceType,
+  UserData,
+  UserState,
+} from "../types";
+import { Helpers } from "../utils/helpers";
+import Database from "better-sqlite3";
+import path from "path";
+import fs from "fs";
 
 // SQLite database implementation
 class DatabaseService {
   private db: Database.Database;
-  
+
   constructor() {
     // Create data directory if it doesn't exist
-    const dataDir = path.join(process.cwd(), 'data');
+    const dataDir = path.join(process.cwd(), "data");
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
-    
+
     // Initialize SQLite database
-    this.db = new Database(path.join(dataDir, 'tnetc-bot.db'));
-    
+    this.db = new Database(path.join(dataDir, "tnetc-bot.db"));
+
     // Create tables if they don't exist
     this.initializeTables();
   }
@@ -83,7 +89,7 @@ class DatabaseService {
       ServiceType.SIGNAL,
       ServiceType.VIP,
       ServiceType.X10_CHALLENGE,
-      ServiceType.COPYTRADE
+      ServiceType.COPYTRADE,
     ];
 
     // Prepare service stats
@@ -109,15 +115,15 @@ class DatabaseService {
     const stmt = this.db.prepare(`
       SELECT * FROM users WHERE id = ?
     `);
-    
+
     // Execute query
     const userRow = stmt.get(userId.toString()) as any;
-    
+
     if (!userRow) return undefined;
-    
+
     // Fetch purchased services
     const purchasedServices = this.getUserPurchasedServices(userId);
-    
+
     // Convert row to UserData object
     return {
       id: userRow.id,
@@ -134,7 +140,7 @@ class DatabaseService {
       testimonialsSent: userRow.testimonialsSent || 0,
       purchasedServices: purchasedServices,
       createdAt: userRow.createdAt ? new Date(userRow.createdAt) : undefined,
-      updatedAt: userRow.updatedAt ? new Date(userRow.updatedAt) : undefined
+      updatedAt: userRow.updatedAt ? new Date(userRow.updatedAt) : undefined,
     };
   }
 
@@ -142,13 +148,13 @@ class DatabaseService {
     const stmt = this.db.prepare(`
       SELECT serviceType FROM user_services WHERE userId = ?
     `);
-    
+
     const rows = stmt.all(userId.toString()) as any[];
-    return rows.map(row => row.serviceType as ServiceType);
+    return rows.map((row) => row.serviceType as ServiceType);
   }
 
   async createUser(
-    userId: number, 
+    userId: number,
     entryPoint: EntryPoint = EntryPoint.DEFAULT,
     username?: string,
     firstName?: string,
@@ -157,7 +163,7 @@ class DatabaseService {
     const now = Date.now();
     const nowDate = new Date();
     const campaignId = Helpers.idGenerator();
-    
+
     // Prepare statement
     const stmt = this.db.prepare(`
       INSERT INTO users (
@@ -166,7 +172,7 @@ class DatabaseService {
         testimonialsSent, createdAt, updatedAt
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    
+
     // Execute insert
     stmt.run(
       userId.toString(),
@@ -183,7 +189,7 @@ class DatabaseService {
       nowDate.toISOString(),
       nowDate.toISOString()
     );
-    
+
     // Return the created user
     const userData: UserData = {
       id: userId.toString(),
@@ -199,105 +205,120 @@ class DatabaseService {
       testimonialsSent: 0,
       purchasedServices: [],
       createdAt: nowDate,
-      updatedAt: nowDate
+      updatedAt: nowDate,
     };
-    
+
     return userData;
   }
 
-  async updateUser(userId: number, updates: Partial<UserData>): Promise<UserData> {
+  async updateUser(
+    userId: number,
+    updates: Partial<UserData>
+  ): Promise<UserData> {
     // Get current user
     const user = await this.getUser(userId);
     if (!user) {
       throw new Error(`User with ID ${userId} not found.`);
     }
-    
+
     // Update the timestamp
     const now = new Date();
-    
+
     // Start transaction
     const transaction = this.db.transaction(() => {
       // Update user table fields
       const userFieldsToUpdate = [
-        'username', 'firstName', 'lastName', 'entryPoint', 
-        'state', 'selectedService', 'lastVisit', 'services',
-        'campaignId', 'testimonialsSent'
+        "username",
+        "firstName",
+        "lastName",
+        "entryPoint",
+        "state",
+        "selectedService",
+        "lastVisit",
+        "services",
+        "campaignId",
+        "testimonialsSent",
       ];
-      
+
       const fieldsToSet: string[] = [];
       const values: any[] = [];
-      
+
       // Add lastActive if present
       if (updates.lastActive) {
-        fieldsToSet.push('lastActive = ?');
+        fieldsToSet.push("lastActive = ?");
         values.push(updates.lastActive.toISOString());
       }
-      
-      userFieldsToUpdate.forEach(field => {
+
+      userFieldsToUpdate.forEach((field) => {
         if (field in updates) {
           fieldsToSet.push(`${field} = ?`);
-          const value = field === 'services' && Array.isArray(updates.services) 
-            ? JSON.stringify(updates.services)
-            : (updates as any)[field];
+          const value =
+            field === "services" && Array.isArray(updates.services)
+              ? JSON.stringify(updates.services)
+              : (updates as any)[field];
           values.push(value);
         }
       });
-      
+
       // Add updatedAt field
-      fieldsToSet.push('updatedAt = ?');
+      fieldsToSet.push("updatedAt = ?");
       values.push(now.toISOString());
-      
+
       // Add userId for WHERE clause
       values.push(userId.toString());
-      
+
       // Execute update if there are fields to update
       if (fieldsToSet.length > 0) {
         const updateQuery = `
           UPDATE users 
-          SET ${fieldsToSet.join(', ')} 
+          SET ${fieldsToSet.join(", ")} 
           WHERE id = ?
         `;
-        
+
         const updateStmt = this.db.prepare(updateQuery);
         updateStmt.run(...values);
       }
-      
+
       // Handle purchased services update if needed
       if (updates.purchasedServices) {
         // First, get current services
         const currentServices = this.getUserPurchasedServices(userId);
-        
+
         // Find services to add (ones in updates but not in current)
         const servicesToAdd = updates.purchasedServices.filter(
-          service => !currentServices.includes(service)
+          (service) => !currentServices.includes(service)
         );
-        
+
         // Add new services
         if (servicesToAdd.length > 0) {
           const insertServiceStmt = this.db.prepare(`
             INSERT OR IGNORE INTO user_services (userId, serviceType, purchasedAt)
             VALUES (?, ?, ?)
           `);
-          
+
           for (const service of servicesToAdd) {
-            insertServiceStmt.run(userId.toString(), service, now.toISOString());
-            
+            insertServiceStmt.run(
+              userId.toString(),
+              service,
+              now.toISOString()
+            );
+
             // Update service stats
             this.incrementServiceStat(service);
           }
         }
       }
     });
-    
+
     // Execute transaction
     transaction();
-    
+
     // Return updated user - get fresh from database
     const updatedUser = await this.getUser(userId);
     if (!updatedUser) {
       throw new Error(`Failed to update user with ID ${userId}`);
     }
-    
+
     return updatedUser;
   }
 
@@ -307,7 +328,7 @@ class DatabaseService {
       SET count = count + 1
       WHERE serviceType = ?
     `);
-    
+
     stmt.run(serviceType);
   }
 
@@ -315,16 +336,16 @@ class DatabaseService {
     const stmt = this.db.prepare(`
       SELECT id FROM users WHERE state = ?
     `);
-    
+
     const rows = stmt.all(state) as any[];
-    
+
     // Get full user data for each ID
     const users: UserData[] = [];
     for (const row of rows) {
       const user = await this.getUser(parseInt(row.id));
       if (user) users.push(user);
     }
-    
+
     return users;
   }
 
@@ -335,16 +356,16 @@ class DatabaseService {
       LEFT JOIN user_services us ON u.id = us.userId
       WHERE u.selectedService = ? OR us.serviceType = ?
     `);
-    
+
     const rows = stmt.all(service, service) as any[];
-    
+
     // Get full user data for each ID
     const users: UserData[] = [];
     for (const row of rows) {
       const user = await this.getUser(parseInt(row.id));
       if (user) users.push(user);
     }
-    
+
     return users;
   }
 
@@ -356,7 +377,7 @@ class DatabaseService {
         scheduledDate, messageId, cancelled
       ) VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
-    
+
     const result = stmt.run(
       followUp.userId.toString(),
       followUp.serviceType,
@@ -366,14 +387,14 @@ class DatabaseService {
       followUp.messageId || null,
       followUp.cancelled ? 1 : 0
     );
-    
+
     // Get the inserted ID
     const id = result.lastInsertRowid as number;
-    
+
     // Return the full follow-up object
     return {
       ...followUp,
-      id
+      id,
     } as FollowUpInfo;
   }
 
@@ -381,85 +402,93 @@ class DatabaseService {
     const stmt = this.db.prepare(`
       SELECT * FROM follow_ups WHERE userId = ?
     `);
-    
+
     const rows = stmt.all(userId.toString()) as any[];
-    
+
     // Convert rows to FollowUpInfo objects
-    return rows.map(row => ({
+    return rows.map((row) => ({
       id: row.id,
       userId: row.userId,
       serviceType: row.serviceType as ServiceType,
       messageNumber: row.messageNumber,
       sentAt: row.sentAt ? new Date(row.sentAt) : undefined,
-      scheduledDate: row.scheduledDate ? new Date(row.scheduledDate) : undefined,
+      scheduledDate: row.scheduledDate
+        ? new Date(row.scheduledDate)
+        : undefined,
       messageId: row.messageId,
-      cancelled: Boolean(row.cancelled)
+      cancelled: Boolean(row.cancelled),
     }));
   }
 
-  async updateFollowUp(userId: number, serviceType: ServiceType, updates: Partial<FollowUpInfo>): Promise<FollowUpInfo | undefined> {
+  async updateFollowUp(
+    userId: number,
+    serviceType: ServiceType,
+    updates: Partial<FollowUpInfo>
+  ): Promise<FollowUpInfo | undefined> {
     // Find the follow-up
     const stmt = this.db.prepare(`
       SELECT * FROM follow_ups 
       WHERE userId = ? AND serviceType = ? AND cancelled = 0
       ORDER BY id DESC LIMIT 1
     `);
-    
+
     const row = stmt.get(userId.toString(), serviceType) as any;
-    
+
     if (!row) return undefined;
-    
+
     // Prepare update fields
     const fieldsToSet: string[] = [];
     const values: any[] = [];
-    
-    if ('messageNumber' in updates) {
-      fieldsToSet.push('messageNumber = ?');
+
+    if ("messageNumber" in updates) {
+      fieldsToSet.push("messageNumber = ?");
       values.push(updates.messageNumber);
     }
-    
-    if ('sentAt' in updates) {
-      fieldsToSet.push('sentAt = ?');
+
+    if ("sentAt" in updates) {
+      fieldsToSet.push("sentAt = ?");
       values.push(updates.sentAt ? updates.sentAt.toISOString() : null);
     }
-    
-    if ('scheduledDate' in updates) {
-      fieldsToSet.push('scheduledDate = ?');
-      values.push(updates.scheduledDate ? updates.scheduledDate.toISOString() : null);
+
+    if ("scheduledDate" in updates) {
+      fieldsToSet.push("scheduledDate = ?");
+      values.push(
+        updates.scheduledDate ? updates.scheduledDate.toISOString() : null
+      );
     }
-    
-    if ('messageId' in updates) {
-      fieldsToSet.push('messageId = ?');
+
+    if ("messageId" in updates) {
+      fieldsToSet.push("messageId = ?");
       values.push(updates.messageId);
     }
-    
-    if ('cancelled' in updates) {
-      fieldsToSet.push('cancelled = ?');
+
+    if ("cancelled" in updates) {
+      fieldsToSet.push("cancelled = ?");
       values.push(updates.cancelled ? 1 : 0);
     }
-    
+
     // Add ID for WHERE clause
     values.push(row.id);
-    
+
     // Execute update if there are fields to update
     if (fieldsToSet.length > 0) {
       const updateQuery = `
         UPDATE follow_ups 
-        SET ${fieldsToSet.join(', ')} 
+        SET ${fieldsToSet.join(", ")} 
         WHERE id = ?
       `;
-      
+
       const updateStmt = this.db.prepare(updateQuery);
       updateStmt.run(...values);
     }
-    
+
     // Get the updated follow-up
     const getUpdatedStmt = this.db.prepare(`
       SELECT * FROM follow_ups WHERE id = ?
     `);
-    
+
     const updatedRow = getUpdatedStmt.get(row.id) as any;
-    
+
     // Convert to FollowUpInfo object
     return {
       id: updatedRow.id,
@@ -467,9 +496,11 @@ class DatabaseService {
       serviceType: updatedRow.serviceType as ServiceType,
       messageNumber: updatedRow.messageNumber,
       sentAt: updatedRow.sentAt ? new Date(updatedRow.sentAt) : undefined,
-      scheduledDate: updatedRow.scheduledDate ? new Date(updatedRow.scheduledDate) : undefined,
+      scheduledDate: updatedRow.scheduledDate
+        ? new Date(updatedRow.scheduledDate)
+        : undefined,
       messageId: updatedRow.messageId,
-      cancelled: Boolean(updatedRow.cancelled)
+      cancelled: Boolean(updatedRow.cancelled),
     };
   }
 
@@ -479,7 +510,7 @@ class DatabaseService {
       SET cancelled = 1
       WHERE userId = ?
     `);
-    
+
     stmt.run(userId.toString());
   }
 
@@ -488,7 +519,7 @@ class DatabaseService {
     const stmt = this.db.prepare(`
       SELECT COUNT(*) as count FROM users
     `);
-    
+
     const result = stmt.get() as any;
     return result.count;
   }
@@ -497,24 +528,24 @@ class DatabaseService {
     const stmt = this.db.prepare(`
       SELECT serviceType, count FROM service_stats
     `);
-    
+
     const rows = stmt.all() as any[];
-    
+
     // Convert to record
     const result: Record<ServiceType, number> = {
       [ServiceType.SIGNAL]: 0,
       [ServiceType.VIP]: 0,
       [ServiceType.X10_CHALLENGE]: 0,
-      [ServiceType.COPYTRADE]: 0
+      [ServiceType.COPYTRADE]: 0,
     };
-    
-    rows.forEach(row => {
+
+    rows.forEach((row) => {
       result[row.serviceType as ServiceType] = row.count;
     });
-    
+
     return result;
   }
-  
+
   // Close database connection
   closeConnection(): void {
     this.db.close();
@@ -525,7 +556,10 @@ class DatabaseService {
    * @param users List of in-memory users to migrate
    * @param followUps List of in-memory follow-ups to migrate
    */
-  async migrateData(users: UserData[], followUps: FollowUpInfo[]): Promise<void> {
+  async migrateData(
+    users: UserData[],
+    followUps: FollowUpInfo[]
+  ): Promise<void> {
     // Begin transaction
     const transaction = this.db.transaction(() => {
       // Migrate users
@@ -538,13 +572,13 @@ class DatabaseService {
             testimonialsSent, createdAt, updatedAt
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
-        
+
         const lastActive = user.lastActive?.toISOString() || null;
         const services = JSON.stringify(user.services || []);
         const testimonialsSent = user.testimonialsSent || 0;
         const createdAt = user.createdAt?.toISOString() || null;
         const updatedAt = user.updatedAt?.toISOString() || null;
-        
+
         insertUserStmt.run(
           user.id,
           user.username,
@@ -561,27 +595,27 @@ class DatabaseService {
           createdAt,
           updatedAt
         );
-        
+
         // Insert purchased services
         if (user.purchasedServices && user.purchasedServices.length > 0) {
           const insertServiceStmt = this.db.prepare(`
             INSERT OR IGNORE INTO user_services (userId, serviceType, purchasedAt)
             VALUES (?, ?, ?)
           `);
-          
+
           for (const service of user.purchasedServices) {
             insertServiceStmt.run(
               user.id,
               service,
               updatedAt || new Date().toISOString()
             );
-            
+
             // Update service stats
             this.incrementServiceStat(service);
           }
         }
       }
-      
+
       // Migrate follow-ups
       for (const followUp of followUps) {
         const insertFollowUpStmt = this.db.prepare(`
@@ -590,7 +624,7 @@ class DatabaseService {
             scheduledDate, messageId, cancelled
           ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
-        
+
         insertFollowUpStmt.run(
           followUp.userId.toString(),
           followUp.serviceType,
@@ -602,13 +636,15 @@ class DatabaseService {
         );
       }
     });
-    
+
     // Execute transaction
     transaction();
-    
-    console.log(`Migration complete: ${users.length} users and ${followUps.length} follow-ups migrated.`);
+
+    console.log(
+      `Migration complete: ${users.length} users and ${followUps.length} follow-ups migrated.`
+    );
   }
 }
 
 // Singleton instance
-export const database = new DatabaseService(); 
+export const database = new DatabaseService();

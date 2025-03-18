@@ -4,3 +4,5 @@
 # SQLite database files
 data/*.db
 data/*.db-journal
+tnetcBot/node_modules
+tnetcBot/dist
