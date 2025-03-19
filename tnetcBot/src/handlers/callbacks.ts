@@ -10,7 +10,7 @@ import {
   handlePurchase,
 } from "../flows/services";
 import { Markup } from "telegraf";
-import { testimonialService } from "../services";
+import { testimonialService } from "../services/testimonials";
 
 /**
  * Handle callback queries from inline buttons
@@ -146,8 +146,13 @@ async function handleSignalAction(ctx: Context, action: string): Promise<void> {
     case "results":
       await handleServiceResults(ctx, ServiceType.SIGNAL);
       // Send image of signal results
-      await ctx.replyWithPhoto({ source: 'assets/results/ea_results_1.jpg' }, 
-        { caption: "📊 Here are our recent signal results showing consistent profits!" });
+      await ctx.replyWithPhoto(
+        { source: "assets/results/ea_results_1.jpg" },
+        {
+          caption:
+            "📊 Here are our recent signal results showing consistent profits!",
+        }
+      );
       break;
 
     case "stats":
@@ -155,27 +160,53 @@ async function handleSignalAction(ctx: Context, action: string): Promise<void> {
         "*📊 Signal Service Performance Stats*\n\n✅ Win Rate: 87.3%\n📈 Average Monthly Return: 28-42%\n🎯 Signal Accuracy: 94.6%\n⏱️ Signals per Week: 15-20\n💰 Avg. Profit per Signal: 3.2%"
       );
       // Add CTA button to join private community
-      await ctx.reply("Want to learn more from our traders?", Markup.inlineKeyboard([
-        [Markup.button.url('Join Private Community Now', 'https://t.me/tnetccommunity/1')]
-      ]));
+      await ctx.reply(
+        "Want to learn more from our traders?",
+        Markup.inlineKeyboard([
+          [
+            Markup.button.url(
+              "Join Private Community Now",
+              "https://t.me/tnetccommunity/1"
+            ),
+          ],
+        ])
+      );
       break;
 
     case "examples":
       await ctx.replyWithMarkdown(
         "*📱 Signal Examples*\n\nOur signals provide precise entry, take profit, and stop loss levels for each trade."
       );
-      
+
       // Send example signal images
-      await ctx.replyWithPhoto({ source: 'assets/service-info/signal1.png' }, 
-        { caption: "🚀 BTC/USDT LONG\n\n▶️ Entry: 63,250-63,500\n🎯 Targets: 64,800 / 65,500 / 66,200\n🛑 Stop Loss: 62,100\n\nLeverage: 5-10x\n⏱️ Timeframe: 12-24 hours" });
-      
-      await ctx.replyWithPhoto({ source: 'assets/service-info/signal2.png' }, 
-        { caption: "📉 XAU/USDT SHORT\n\n▶️ Entry: 3,380-3,420\n🎯 Targets: 3,280 / 3,150 / 3,050\n🛑 Stop Loss: 3,520\n\nLeverage: 5-10x\n⏱️ Timeframe: 8-12 hours" });
-      
+      await ctx.replyWithPhoto(
+        { source: "assets/service-info/signal1.png" },
+        {
+          caption:
+            "🚀 BTC/USDT LONG\n\n▶️ Entry: 63,250-63,500\n🎯 Targets: 64,800 / 65,500 / 66,200\n🛑 Stop Loss: 62,100\n\nLeverage: 5-10x\n⏱️ Timeframe: 12-24 hours",
+        }
+      );
+
+      await ctx.replyWithPhoto(
+        { source: "assets/service-info/signal2.png" },
+        {
+          caption:
+            "📉 XAU/USDT SHORT\n\n▶️ Entry: 3,380-3,420\n🎯 Targets: 3,280 / 3,150 / 3,050\n🛑 Stop Loss: 3,520\n\nLeverage: 5-10x\n⏱️ Timeframe: 8-12 hours",
+        }
+      );
+
       // Add CTA after examples
-      await ctx.reply("Ready to receive signals like these?", Markup.inlineKeyboard([
-        [Markup.button.url('💰 Get Premium Signals', 'https://t.me/m/DvGbHx0NZTFl')]
-      ]));
+      await ctx.reply(
+        "Ready to receive signals like these?",
+        Markup.inlineKeyboard([
+          [
+            Markup.button.url(
+              "💰 Get Premium Signals",
+              "https://t.me/m/DvGbHx0NZTFl"
+            ),
+          ],
+        ])
+      );
       break;
 
     case "pricing":
@@ -198,23 +229,28 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
     case "benefits":
       await ctx.replyWithMarkdown(
         "*🏆 EXCLUSIVE VIP PACKAGE BENEFITS 🏆*\n\n" +
-        "📈 *Premium Benefits Only Available to VIP Members:*\n\n" +
-        "• Priority access to ALL trade signals before regular users\n" +
-        "• Personal VIP account manager available 24/7\n" +
-        "• One-on-one trading strategy consultation calls\n" +
-        "• Access to proprietary trading algorithms and strategies\n" +
-        "• Entry to our exclusive VIP trading community\n" +
-        "• First access to new features and services\n\n" +
-        "*⏰ LIMITED TIME OFFER: Only 15 VIP spots remaining!*"
+          "📈 *Premium Benefits Only Available to VIP Members:*\n\n" +
+          "• Priority access to ALL trade signals before regular users\n" +
+          "• Personal VIP account manager available 24/7\n" +
+          "• One-on-one trading strategy consultation calls\n" +
+          "• Access to proprietary trading algorithms and strategies\n" +
+          "• Entry to our exclusive VIP trading community\n" +
+          "• First access to new features and services\n\n" +
+          "*⏰ LIMITED TIME OFFER: Only 15 VIP spots remaining!*"
       );
-      
+
       // Add CTA button
       await ctx.reply("Ready to upgrade your trading experience?", {
         reply_markup: {
-          inline_keyboard: [[
-            { text: "💎 BECOME A VIP MEMBER NOW", url: "https://t.me/m/DvGbHx0NZTFl" }
-          ]]
-        }
+          inline_keyboard: [
+            [
+              {
+                text: "💎 BECOME A VIP MEMBER NOW",
+                url: "https://t.me/m/DvGbHx0NZTFl",
+              },
+            ],
+          ],
+        },
       });
       break;
 
@@ -223,41 +259,46 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
         // Send text testimonials first
         await ctx.replyWithMarkdown(
           "*💰 VIP MEMBERS SUCCESS STORIES 💰*\n\n" +
-          "💬 *Alex P.* - _\"Since joining the VIP program, my trading has completely transformed. I'm consistently making $5,000+ weekly following the VIP signals. Best investment I've ever made.\"_\n\n" +
-          "💬 *Jennifer K.* - _\"The personal coaching alone is worth 10x what I paid. My account has grown 320% in just 2 months with the VIP team guiding me.\"_\n\n" +
-          "💬 *Marcus T.* - _\"The exclusive VIP signals have been incredible - 97% win rate last month and I've already made back my investment 8 times over!\"_"
+            "💬 *Alex P.* - _\"Since joining the VIP program, my trading has completely transformed. I'm consistently making $5,000+ weekly following the VIP signals. Best investment I've ever made.\"_\n\n" +
+            '💬 *Jennifer K.* - _"The personal coaching alone is worth 10x what I paid. My account has grown 320% in just 2 months with the VIP team guiding me."_\n\n' +
+            '💬 *Marcus T.* - _"The exclusive VIP signals have been incredible - 97% win rate last month and I\'ve already made back my investment 8 times over!"_'
         );
-        
+
         // Send performance images
         const mediaGroup = [
           {
-            type: 'photo' as const,
-            media: { source: 'assets/testimonials/testimonial_1.jpg' },
+            type: "photo" as const,
+            media: { source: "assets/testimonials/testimonial_1.jpg" },
             caption: "✅ VIP member results - $15,400 profit in 1 week",
-            parse_mode: 'Markdown' as const
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: 'assets/testimonials/testimonial_2.jpg' },
+            type: "photo" as const,
+            media: { source: "assets/testimonials/testimonial_2.jpg" },
             caption: "✅ VIP signals performance - 94.3% accuracy last month",
-            parse_mode: 'Markdown' as const
-          }
+            parse_mode: "Markdown" as const,
+          },
         ];
-        
+
         await ctx.replyWithMediaGroup(mediaGroup);
-        
+
         // Final CTA
         await ctx.replyWithMarkdown(
           "*🔥 SPECIAL VIP OFFER - 50% DISCOUNT TODAY ONLY! 🔥*\n\n" +
-          "Regular price: ~~$1,000/month~~\n" +
-          "Limited time offer: *$497 LIFETIME ACCESS*\n\n" +
-          "*⚠️ ONLY 15 SPOTS REMAINING AT THIS PRICE ⚠️*",
+            "Regular price: ~~$1,000/month~~\n" +
+            "Limited time offer: *$497 LIFETIME ACCESS*\n\n" +
+            "*⚠️ ONLY 15 SPOTS REMAINING AT THIS PRICE ⚠️*",
           {
             reply_markup: {
-              inline_keyboard: [[
-                { text: "💎 SECURE YOUR VIP ACCESS NOW", url: "https://t.me/m/DvGbHx0NZTFl" }
-              ]]
-            }
+              inline_keyboard: [
+                [
+                  {
+                    text: "💎 SECURE YOUR VIP ACCESS NOW",
+                    url: "https://t.me/m/DvGbHx0NZTFl",
+                  },
+                ],
+              ],
+            },
           }
         );
       } catch (error) {
@@ -265,10 +306,10 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
         // Fallback to text only
         await ctx.replyWithMarkdown(
           "*📊 VIP PERFORMANCE HIGHLIGHTS*\n\n" +
-          "• Average monthly return: 115-180%\n" +
-          "• Signal accuracy: 97.3%\n" +
-          "• VIP members outperform regular users by 3.5x\n\n" +
-          "*🔥 SPECIAL OFFER: 50% OFF LIFETIME ACCESS TODAY ONLY!*"
+            "• Average monthly return: 115-180%\n" +
+            "• Signal accuracy: 97.3%\n" +
+            "• VIP members outperform regular users by 3.5x\n\n" +
+            "*🔥 SPECIAL OFFER: 50% OFF LIFETIME ACCESS TODAY ONLY!*"
         );
       }
       break;
@@ -276,27 +317,33 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
     case "features":
       await ctx.replyWithMarkdown(
         "*🚀 PREMIUM VIP FEATURES & SERVICES 🚀*\n\n" +
-        "✅ *Exclusive Access to Everything:*\n\n" +
-        "• 24/7 direct support line with trading experts\n" +
-        "• Weekly market analysis video calls\n" +
-        "• Custom trade plan development for your goals\n" +
-        "• Risk management consultation\n" +
-        "• Lifetime access to premium educational materials\n" +
-        "• Early access to our proprietary trading tools\n" +
-        "• Direct line to our top analysts\n\n" +
-        "*💎 Value: Over $5,000 - Available now for just $497!*"
+          "✅ *Exclusive Access to Everything:*\n\n" +
+          "• 24/7 direct support line with trading experts\n" +
+          "• Weekly market analysis video calls\n" +
+          "• Custom trade plan development for your goals\n" +
+          "• Risk management consultation\n" +
+          "• Lifetime access to premium educational materials\n" +
+          "• Early access to our proprietary trading tools\n" +
+          "• Direct line to our top analysts\n\n" +
+          "*💎 Value: Over $5,000 - Available now for just $497!*"
       );
-      
+
       // Add image and CTA
       await ctx.replyWithPhoto(
-        { source: 'assets/service-info/vip_benefits.jpg' },
-        { 
-          caption: "VIP members average 3.5x higher returns than standard users!",
+        { source: "assets/service-info/vip_benefits.jpg" },
+        {
+          caption:
+            "VIP members average 3.5x higher returns than standard users!",
           reply_markup: {
-            inline_keyboard: [[
-              { text: "🔥 GET VIP ACCESS TODAY", url: "https://t.me/m/DvGbHx0NZTFl" }
-            ]]
-          }
+            inline_keyboard: [
+              [
+                {
+                  text: "🔥 GET VIP ACCESS TODAY",
+                  url: "https://t.me/m/DvGbHx0NZTFl",
+                },
+              ],
+            ],
+          },
         }
       );
       break;
@@ -304,35 +351,40 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
     case "pricing":
       await ctx.replyWithMarkdown(
         "*💰 VIP PACKAGE - SPECIAL LIMITED OFFER 💰*\n\n" +
-        "*⚠️ WARNING: PRICES INCREASE TOMORROW! ⚠️*\n\n" +
-        "*VIP PACKAGE INCLUDES:*\n" +
-        "✅ Lifetime access to premium signals\n" +
-        "✅ 24/7 personal account manager\n" +
-        "✅ Private VIP community access\n" +
-        "✅ Weekly strategy sessions\n" +
-        "✅ Proprietary trading algorithms\n" +
-        "✅ Risk management tools\n\n" +
-        "*REGULAR PRICE: $3,000/MONTH*\n" +
-        "*TODAY'S OFFER: $1999 ONE-TIME PAYMENT (LIFETIME)*\n\n" +
-        "*⏰ ONLY 15 VIP SPOTS REMAINING AT THIS PRICE!*\n" +
-        "Our last VIP spots sold out in under 8 hours. Don't miss this opportunity!"
+          "*⚠️ WARNING: PRICES INCREASE TOMORROW! ⚠️*\n\n" +
+          "*VIP PACKAGE INCLUDES:*\n" +
+          "✅ Lifetime access to premium signals\n" +
+          "✅ 24/7 personal account manager\n" +
+          "✅ Private VIP community access\n" +
+          "✅ Weekly strategy sessions\n" +
+          "✅ Proprietary trading algorithms\n" +
+          "✅ Risk management tools\n\n" +
+          "*REGULAR PRICE: $3,000/MONTH*\n" +
+          "*TODAY'S OFFER: $1999 ONE-TIME PAYMENT (LIFETIME)*\n\n" +
+          "*⏰ ONLY 15 VIP SPOTS REMAINING AT THIS PRICE!*\n" +
+          "Our last VIP spots sold out in under 8 hours. Don't miss this opportunity!"
       );
-      
+
       // Add strong CTA button
       await ctx.reply("Ready to transform your trading?", {
         reply_markup: {
-          inline_keyboard: [[
-            { text: "💎 SECURE YOUR VIP ACCESS NOW", url: "https://t.me/m/DvGbHx0NZTFl" }
-          ]]
-        }
+          inline_keyboard: [
+            [
+              {
+                text: "💎 SECURE YOUR VIP ACCESS NOW",
+                url: "https://t.me/m/DvGbHx0NZTFl",
+              },
+            ],
+          ],
+        },
       });
       break;
 
     default:
       await ctx.replyWithMarkdown(
         "*🏆 VIP EXCLUSIVE PACKAGE - LIMITED AVAILABILITY! 🏆*\n\n" +
-        "Discover why our VIP members achieve 3.5x better results with our most comprehensive trading package!\n\n" +
-        "Select an option below to learn more:"
+          "Discover why our VIP members achieve 3.5x better results with our most comprehensive trading package!\n\n" +
+          "Select an option below to learn more:"
       );
       await ctx.reply("", KeyboardUtils.getVIPKeyboard());
   }
@@ -365,58 +417,60 @@ async function handleX10Action(ctx: Context, action: string): Promise<void> {
         // First send the testimonial text
         await ctx.replyWithMarkdown(
           "🌟 *X10 CHALLENGE SUCCESS STORIES* 🌟\n\n" +
-          "Here are some of our successful traders who completed the X10 Challenge:\n\n" +
-          "💬 *John M.* - _\"I was skeptical at first, but after following the X10 Challenge strategy, I turned my $1,000 account into $12,450 in just 28 days! Life-changing experience.\"_\n\n" +
-          "💬 *Sarah T.* - _\"The X10 Challenge gave me the confidence and knowledge to become a consistent trader. My initial $500 grew to $5,700 in just one month!\"_\n\n" +
-          "💬 *Michael R.* - _\"I've tried other services before but nothing comes close to the X10 Challenge. The support team is always available and the signals are incredibly accurate. $2,000 to $21,300 in 31 days!\"_"
+            "Here are some of our successful traders who completed the X10 Challenge:\n\n" +
+            '💬 *John M.* - _"I was skeptical at first, but after following the X10 Challenge strategy, I turned my $1,000 account into $12,450 in just 28 days! Life-changing experience."_\n\n' +
+            '💬 *Sarah T.* - _"The X10 Challenge gave me the confidence and knowledge to become a consistent trader. My initial $500 grew to $5,700 in just one month!"_\n\n' +
+            '💬 *Michael R.* - _"I\'ve tried other services before but nothing comes close to the X10 Challenge. The support team is always available and the signals are incredibly accurate. $2,000 to $21,300 in 31 days!"_'
         );
 
         // Then send testimonial images
         // In a production environment, you would use real testimonial images
         const mediaGroup = [
           {
-            type: 'photo' as const,
-            media: { source: 'assets/testimonials/testimonial_1.jpg' },
-            caption: "✅ X10 Challenge member results - $1,000 to $10,500 in 25 days",
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "assets/testimonials/testimonial_1.jpg" },
+            caption:
+              "✅ X10 Challenge member results - $1,000 to $10,500 in 25 days",
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: 'assets/testimonials/testimonial_2.jpg' },
-            caption: "✅ X10 Challenge member results - Account growth of 1,150%",
-            parse_mode: 'Markdown' as const
-          }
+            type: "photo" as const,
+            media: { source: "assets/testimonials/testimonial_2.jpg" },
+            caption:
+              "✅ X10 Challenge member results - Account growth of 1,150%",
+            parse_mode: "Markdown" as const,
+          },
         ];
-        
+
         await ctx.replyWithMediaGroup(mediaGroup);
-        
+
         // Send a final call-to-action message
         await ctx.replyWithMarkdown(
           "🔥 *Don't miss out on the opportunity to transform your trading!* 🔥\n\n" +
-          "Only *17 spots* remain in our current X10 Challenge. Join now to receive our premium signals and guidance!",
+            "Only *17 spots* remain in our current X10 Challenge. Join now to receive our premium signals and guidance!",
           {
             reply_markup: {
               inline_keyboard: [
                 [
                   {
                     text: "🚀 JOIN THE X10 CHALLENGE NOW! 🚀",
-                    url: "https://t.me/tnetccommunity/186"
-                  }
-                ]
-              ]
-            }
+                    url: "https://t.me/tnetccommunity/186",
+                  },
+                ],
+              ],
+            },
           }
         );
       } catch (error) {
         console.error("Error sending testimonials with images:", error);
-        
+
         // Fallback if images can't be sent
         await ctx.replyWithMarkdown(
           "📊 *X10 Challenge Success Stories*\n\n" +
-          "Our members consistently achieve incredible results:\n\n" +
-          "• Average account growth: 850% in 30 days\n" +
-          "• 94.5% of members complete the challenge successfully\n" +
-          "• 50+ traders have turned $1,000 into $10,000+ using our system"
+            "Our members consistently achieve incredible results:\n\n" +
+            "• Average account growth: 850% in 30 days\n" +
+            "• 94.5% of members complete the challenge successfully\n" +
+            "• 50+ traders have turned $1,000 into $10,000+ using our system"
         );
       }
       break;
@@ -447,68 +501,76 @@ async function handleX10Action(ctx: Context, action: string): Promise<void> {
         // Send testimonial images
         const testimonialImages = [
           {
-            type: 'photo' as const,
-            media: { source: './assets/testimonials/testimonial_1.jpg' },
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "./assets/testimonials/testimonial_1.jpg" },
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: './assets/testimonials/testimonial_2.jpg' },
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "./assets/testimonials/testimonial_2.jpg" },
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: './assets/testimonials/testimonial_3.jpg' },
-            parse_mode: 'Markdown' as const
-          }
+            type: "photo" as const,
+            media: { source: "./assets/testimonials/testimonial_3.jpg" },
+            parse_mode: "Markdown" as const,
+          },
         ];
-        
+
         await ctx.replyWithMediaGroup(testimonialImages);
-        
+
         // Send result images
         // Use the imported testimonialService instead of creating a new instance
-        const x10Testimonials = testimonialService.getFollowUpTestimonials(ServiceType.X10_CHALLENGE);
-        
+        const x10Testimonials = testimonialService.getFollowUpTestimonials(
+          ServiceType.X10_CHALLENGE
+        );
+
         // Create media group for results
         const resultImages = [
           {
-            type: 'photo' as const,
-            media: { source: './assets/results/x10_result_1.jpg' },
-            caption: x10Testimonials.length > 0 ? x10Testimonials[0].caption : "🚀 Incredible results from our X10 Challenge members!",
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "./assets/results/x10_result_1.jpg" },
+            caption:
+              x10Testimonials.length > 0
+                ? x10Testimonials[0].caption
+                : "🚀 Incredible results from our X10 Challenge members!",
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: './assets/results/x10_result_2.jpg' },
-            caption: x10Testimonials.length > 1 ? x10Testimonials[1].caption : "💰 Another member's success story from our X10 Challenge!",
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "./assets/results/x10_result_2.jpg" },
+            caption:
+              x10Testimonials.length > 1
+                ? x10Testimonials[1].caption
+                : "💰 Another member's success story from our X10 Challenge!",
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: './assets/results/ea_result_1.jpg' },
+            type: "photo" as const,
+            media: { source: "./assets/results/ea_result_1.jpg" },
             caption: "📈 Our proven system consistently delivers results!",
-            parse_mode: 'Markdown' as const
-          }
+            parse_mode: "Markdown" as const,
+          },
         ];
-        
+
         await ctx.replyWithMediaGroup(resultImages);
-        
+
         // Send text testimonials as well
         await ctx.replyWithMarkdown(
-          '*📊 X10 Challenge Success Stories*\n\n' +
-          'John S. - "Started with $1,000, ended with $12,450 in just 28 days!"\n\n' +
-          'Maria L. - "The X10 Challenge helped me quit my job. I turned $2,500 into $27,800 in a month."\n\n' +
-          'David R. - "I was skeptical at first, but the results speak for themselves. $5,000 to $48,900 in 30 days."'
+          "*📊 X10 Challenge Success Stories*\n\n" +
+            'John S. - "Started with $1,000, ended with $12,450 in just 28 days!"\n\n' +
+            'Maria L. - "The X10 Challenge helped me quit my job. I turned $2,500 into $27,800 in a month."\n\n' +
+            'David R. - "I was skeptical at first, but the results speak for themselves. $5,000 to $48,900 in 30 days."'
         );
       } catch (error) {
         console.error("Error sending testimonials and results:", error);
-        
+
         // Fallback to just text if images fail
         await ctx.replyWithMarkdown(
-          '*📊 X10 Challenge Success Stories*\n\n' +
-          'John S. - "Started with $1,000, ended with $12,450 in just 28 days!"\n\n' +
-          'Maria L. - "The X10 Challenge helped me quit my job. I turned $2,500 into $27,800 in a month."\n\n' +
-          'David R. - "I was skeptical at first, but the results speak for themselves. $5,000 to $48,900 in 30 days."'
+          "*📊 X10 Challenge Success Stories*\n\n" +
+            'John S. - "Started with $1,000, ended with $12,450 in just 28 days!"\n\n' +
+            'Maria L. - "The X10 Challenge helped me quit my job. I turned $2,500 into $27,800 in a month."\n\n' +
+            'David R. - "I was skeptical at first, but the results speak for themselves. $5,000 to $48,900 in 30 days."'
         );
       }
       break;
@@ -538,23 +600,24 @@ async function handleCopytradeAction(
         // Send copytrade result images
         const resultImages = [
           {
-            type: 'photo' as const,
-            media: { source: './assets/results/copytrade_results_1.jpg' },
-            caption: '*COPYTRADE RESULTS - Consistent profits with minimal risk*',
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "./assets/results/copytrade_results_1.jpg" },
+            caption:
+              "*COPYTRADE RESULTS - Consistent profits with minimal risk*",
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: './assets/results/copytrade_results_2.jpg' },
-            parse_mode: 'Markdown' as const
+            type: "photo" as const,
+            media: { source: "./assets/results/copytrade_results_2.jpg" },
+            parse_mode: "Markdown" as const,
           },
           {
-            type: 'photo' as const,
-            media: { source: './assets/results/copytrade_results_1.jpg' },
-            parse_mode: 'Markdown' as const
-          }
+            type: "photo" as const,
+            media: { source: "./assets/results/copytrade_results_1.jpg" },
+            parse_mode: "Markdown" as const,
+          },
         ];
-        
+
         await ctx.replyWithMediaGroup(resultImages);
         await handleServiceResults(ctx, ServiceType.COPYTRADE);
       } catch (error) {
@@ -573,15 +636,23 @@ async function handleCopytradeAction(
     case "start":
       await ctx.replyWithMarkdown(
         "*🚀 Start Your Copytrading Journey Today!*\n\n" +
-        "Ready to earn passive income through our proven copytrading system? Our expert team will:\n\n" +
-        "• Guide you through the complete setup process\n" +
-        "• Configure your account for optimal performance\n" +
-        "• Answer all your questions about the service\n\n" +
-        "*👇 Click the button below to get started 👇*"
+          "Ready to earn passive income through our proven copytrading system? Our expert team will:\n\n" +
+          "• Guide you through the complete setup process\n" +
+          "• Configure your account for optimal performance\n" +
+          "• Answer all your questions about the service\n\n" +
+          "*👇 Click the button below to get started 👇*"
       );
-      await ctx.reply("", Markup.inlineKeyboard([
-        [Markup.button.url("📱 Contact Support Team", "https://t.me/m/KAYFGGyMYzk1")]
-      ]));
+      await ctx.reply(
+        "",
+        Markup.inlineKeyboard([
+          [
+            Markup.button.url(
+              "📱 Contact Support Team",
+              "https://t.me/m/KAYFGGyMYzk1"
+            ),
+          ],
+        ])
+      );
       break;
 
     default:
