@@ -37,12 +37,8 @@ RUN npm ci --omit=dev && \
     apk add --no-cache sqlite sqlite-dev python3 make g++ && \
     # Create data directory for SQLite database
     mkdir -p /app/data && \
-    # Set appropriate permissions
-    chmod 755 /app/data && \
-    # Create a non-root user to run the app
-    addgroup -S appgroup && \
-    adduser -S appuser -G appgroup && \
-    chown -R appuser:appgroup /app
+    # Set appropriate permissions (open for any user)
+    chmod 777 /app/data
 
 # Copy built app from builder stage
 COPY --from=builder /app/dist ./dist
@@ -53,12 +49,16 @@ COPY --from=builder /app/dist ./dist
 # Create volume for persistent data
 VOLUME ["/app/data"]
 
-# Switch to non-root user
-USER appuser
-
 # Copy entrypoint script
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# These are commented out as we're running as root in docker-compose.yml
+# For production deployment, uncomment these lines and remove user: "root" from docker-compose.yml
+# RUN addgroup -S appgroup && \
+#     adduser -S appuser -G appgroup && \
+#     chown -R appuser:appgroup /app
+# USER appuser
 
 # Start the bot
 ENTRYPOINT ["/entrypoint.sh"]

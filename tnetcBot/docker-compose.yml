@@ -6,8 +6,23 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    # Run as root for debugging issues with data directory
+    user: "root"
     volumes:
       - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - BOT_TOKEN=${BOT_TOKEN}
+      # Disable webhook for local development
+      - USE_WEBHOOK=false
+      # If you need webhook, uncomment these and provide proper values
+      # - USE_WEBHOOK=true
+      # - WEBHOOK_DOMAIN=https://your-domain.com
+      # - WEBHOOK_PORT=3000
+      - DB_PATH=/app/data/tnetc-bot.db
+    ports:
+      # Only needed if using webhook mode
+      - "3000:3000"
     logging:
       driver: "json-file"
       options:
