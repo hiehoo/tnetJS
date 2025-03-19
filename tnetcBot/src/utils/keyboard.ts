@@ -88,7 +88,7 @@ export class KeyboardUtils {
       ],
       [
         Markup.button.callback('📱 Signal Examples', 'signal:examples'),
-        Markup.button.callback('💰 Pricing & Plans', 'signal:pricing')
+        Markup.button.url('💰 Contact Support', 'https://t.me/m/DvGbHx0NZTFl')
       ],
       [
         Markup.button.callback('🔙 Back to Services', 'back:services')
@@ -124,11 +124,10 @@ export class KeyboardUtils {
         Markup.button.callback('🚀 JOIN CHALLENGE NOW! 🚀', 'x10:join')
       ],
       [
-        Markup.button.callback('🎯 Challenge Details', 'x10:details'),
-        Markup.button.callback('📊 Success Stories', 'x10:success')
+        Markup.button.callback('📊 Success Stories & Testimonials', 'x10:testimonials_with_images')
       ],
+      [Markup.button.url('Contact Support', 'https://t.me/m/1Q0AzxOLNDY1')],
       [
-        Markup.button.callback('❓ How It Works', 'x10:howItWorks'),
         Markup.button.callback('🔙 Back to Services', 'back:services')
       ]
     ]);
@@ -144,8 +143,7 @@ export class KeyboardUtils {
         Markup.button.callback('📊 Performance Stats', 'copytrade:stats')
       ],
       [
-        Markup.button.callback('💰 Start Earning', 'copytrade:start'),
-        Markup.button.callback('❓ How It Works', 'copytrade:howItWorks')
+        Markup.button.url('💰 Start Earning', 'https://t.me/m/KAYFGGyMYzk1'),
       ],
       [
         Markup.button.callback('🔙 Back to Services', 'back:services')

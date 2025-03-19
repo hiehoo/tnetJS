@@ -1,5 +1,5 @@
 import { Telegraf, session } from 'telegraf';
-import { handleStart } from './handlers/commands';
+import { handleStart } from './handlers/start';
 import { handleCallbackQuery } from './handlers/callbacks';
 import { handleMessage } from './handlers/messages';
 import { database } from './services';
