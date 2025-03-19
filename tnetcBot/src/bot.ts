@@ -8,9 +8,6 @@ import { BOT_TOKEN, USE_WEBHOOK, WEBHOOK_DOMAIN, WEBHOOK_PORT } from "./config";
 // Initialize the bot
 const bot = new Telegraf(BOT_TOKEN);
 
-// Export the bot so it can be used by other modules
-export { bot };
-
 // Register middleware
 bot.use(session());
 
