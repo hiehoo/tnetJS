@@ -375,13 +375,13 @@ async function handleX10Action(ctx: Context, action: string): Promise<void> {
         const mediaGroup = [
           {
             type: 'photo' as const,
-            media: { source: 'assets/testimonials/x10_testimonial_1.jpg' },
+            media: { source: 'assets/testimonials/testimonial_1.jpg' },
             caption: "✅ X10 Challenge member results - $1,000 to $10,500 in 25 days",
             parse_mode: 'Markdown' as const
           },
           {
             type: 'photo' as const,
-            media: { source: 'assets/testimonials/x10_testimonial_2.jpg' },
+            media: { source: 'assets/testimonials/testimonial_2.jpg' },
             caption: "✅ X10 Challenge member results - Account growth of 1,150%",
             parse_mode: 'Markdown' as const
           }
@@ -465,20 +465,28 @@ async function handleX10Action(ctx: Context, action: string): Promise<void> {
         await ctx.replyWithMediaGroup(testimonialImages);
         
         // Send result images
+        // Get testimonials from service
+        const testimonialService = new TestimonialService();
+        const x10Testimonials = testimonialService.getFollowUpTestimonials(ServiceType.X10_CHALLENGE);
+        
+        // Create media group for results
         const resultImages = [
           {
             type: 'photo' as const,
             media: { source: './assets/results/x10_result_1.jpg' },
+            caption: x10Testimonials.length > 0 ? x10Testimonials[0].text : "🚀 Incredible results from our X10 Challenge members!",
             parse_mode: 'Markdown' as const
           },
           {
             type: 'photo' as const,
             media: { source: './assets/results/x10_result_2.jpg' },
+            caption: x10Testimonials.length > 1 ? x10Testimonials[1].text : "💰 Another member's success story from our X10 Challenge!",
             parse_mode: 'Markdown' as const
           },
           {
             type: 'photo' as const,
             media: { source: './assets/results/ea_result_1.jpg' },
+            caption: "📈 Our proven system consistently delivers results!",
             parse_mode: 'Markdown' as const
           }
         ];
