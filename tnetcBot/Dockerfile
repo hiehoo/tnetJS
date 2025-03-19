@@ -56,5 +56,10 @@ VOLUME ["/app/data"]
 # Switch to non-root user
 USER appuser
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Start the bot
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "dist/index.js"] 

@@ -21,8 +21,33 @@ class DatabaseService {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
-    // Initialize SQLite database
-    this.db = new Database(path.join(dataDir, "tnetc-bot.db"));
+    // Get DB path from environment or use default
+    const dbPath = process.env.DB_PATH || path.join(dataDir, "tnetc-bot.db");
+
+    // Log database path for debugging
+    console.log(`Initializing SQLite database at: ${dbPath}`);
+
+    try {
+      // Initialize SQLite database
+      this.db = new Database(dbPath);
+      console.log("SQLite database initialized successfully");
+    } catch (error) {
+      console.error("Error initializing database:", error);
+      // Log directory contents and permissions
+      try {
+        console.log("Data directory contents:");
+        if (fs.existsSync(path.dirname(dbPath))) {
+          console.log(fs.readdirSync(path.dirname(dbPath)));
+          console.log("Data directory permissions:");
+          console.log(fs.statSync(path.dirname(dbPath)));
+        } else {
+          console.log("Data directory does not exist:", path.dirname(dbPath));
+        }
+      } catch (dirError) {
+        console.error("Error checking data directory:", dirError);
+      }
+      throw error;
+    }
 
     // Create tables if they don't exist
     this.initializeTables();
