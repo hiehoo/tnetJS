@@ -1,5 +1,5 @@
 # Build stage
-FROM node:23.4.0 AS builder
+FROM node:23.4.0-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -18,7 +18,7 @@ COPY src ./src
 RUN npm run build
 
 # Production stage
-FROM node:23.4.0 AS production
+FROM node:23.4.0-alpine AS production
 
 # Set Node.js to production mode
 ENV NODE_ENV=production
