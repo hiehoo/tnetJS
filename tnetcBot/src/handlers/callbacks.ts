@@ -10,6 +10,7 @@ import {
   handlePurchase,
 } from "../flows/services";
 import { Markup } from "telegraf";
+import { testimonialService } from "../services";
 
 /**
  * Handle callback queries from inline buttons
@@ -465,8 +466,7 @@ async function handleX10Action(ctx: Context, action: string): Promise<void> {
         await ctx.replyWithMediaGroup(testimonialImages);
         
         // Send result images
-        // Get testimonials from service
-        const testimonialService = new TestimonialService();
+        // Use the imported testimonialService instead of creating a new instance
         const x10Testimonials = testimonialService.getFollowUpTestimonials(ServiceType.X10_CHALLENGE);
         
         // Create media group for results
@@ -474,13 +474,13 @@ async function handleX10Action(ctx: Context, action: string): Promise<void> {
           {
             type: 'photo' as const,
             media: { source: './assets/results/x10_result_1.jpg' },
-            caption: x10Testimonials.length > 0 ? x10Testimonials[0].text : "🚀 Incredible results from our X10 Challenge members!",
+            caption: x10Testimonials.length > 0 ? x10Testimonials[0].caption : "🚀 Incredible results from our X10 Challenge members!",
             parse_mode: 'Markdown' as const
           },
           {
             type: 'photo' as const,
             media: { source: './assets/results/x10_result_2.jpg' },
-            caption: x10Testimonials.length > 1 ? x10Testimonials[1].text : "💰 Another member's success story from our X10 Challenge!",
+            caption: x10Testimonials.length > 1 ? x10Testimonials[1].caption : "💰 Another member's success story from our X10 Challenge!",
             parse_mode: 'Markdown' as const
           },
           {
