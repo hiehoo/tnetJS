@@ -10,6 +10,8 @@ services:
     user: "root"
     volumes:
       - ./data:/app/data
+    env_file:
+      - .env
     logging:
       driver: "json-file"
       options:

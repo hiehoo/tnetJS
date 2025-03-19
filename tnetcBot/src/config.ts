@@ -6,6 +6,7 @@ dotenv.config();
 
 // Bot configuration
 export const BOT_TOKEN = process.env.BOT_TOKEN || "YOUR_BOT_TOKEN_HERE";
+console.log("BOT_TOKEN", BOT_TOKEN);
 export const ADMIN_USER_ID = Number(process.env.ADMIN_USER_ID) || 0;
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
