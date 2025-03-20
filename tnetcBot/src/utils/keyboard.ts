@@ -83,8 +83,7 @@ export class KeyboardUtils {
   static getSignalKeyboard() {
     return Markup.inlineKeyboard([
       [
-        Markup.button.callback('📈 View Signal Results', 'signal:results'),
-        Markup.button.callback('📊 Signal Stats', 'signal:stats')
+        Markup.button.callback('📈 View Signal Results', 'signal:results')
       ],
       [
         Markup.button.callback('📱 Signal Examples', 'signal:examples'),
@@ -102,12 +101,13 @@ export class KeyboardUtils {
   static getVIPKeyboard() {
     return Markup.inlineKeyboard([
       [
-        Markup.button.callback('🏆 VIP Benefits', 'vip:benefits'),
-        Markup.button.callback('📊 VIP Performance', 'vip:performance')
+        Markup.button.url('💎 Contact Sale Leader for purchase', 'https://t.me/m/DvGbHx0NZTFl')
       ],
       [
-        Markup.button.callback('🚀 Premium Features', 'vip:features'),
-        Markup.button.callback('💰 Pricing & Access', 'vip:pricing')
+        Markup.button.callback('🏆 VIP Benefits', 'vip:benefits')
+      ],
+      [
+        Markup.button.callback('📊 VIP Results & Testimonials', 'vip:performance')
       ],
       [
         Markup.button.callback('🔙 Back to Services', 'back:services')
@@ -147,7 +147,7 @@ export class KeyboardUtils {
       ],
       [
         Markup.button.callback('🔙 Back to Services', 'back:services')
-      ]
+      ] 
     ]);
   }
 

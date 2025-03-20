@@ -146,67 +146,26 @@ async function handleSignalAction(ctx: Context, action: string): Promise<void> {
     case "results":
       await handleServiceResults(ctx, ServiceType.SIGNAL);
       // Send image of signal results
-      await ctx.replyWithPhoto(
-        { source: "assets/results/ea_results_1.jpg" },
-        {
-          caption:
-            "📊 Here are our recent signal results showing consistent profits!",
-        }
-      );
-      break;
-
-    case "stats":
-      await ctx.replyWithMarkdown(
-        "*📊 Signal Service Performance Stats*\n\n✅ Win Rate: 87.3%\n📈 Average Monthly Return: 28-42%\n🎯 Signal Accuracy: 94.6%\n⏱️ Signals per Week: 15-20\n💰 Avg. Profit per Signal: 3.2%"
-      );
-      // Add CTA button to join private community
-      await ctx.reply(
-        "Want to learn more from our traders?",
-        Markup.inlineKeyboard([
-          [
-            Markup.button.url(
-              "Join Private Community Now",
-              "https://t.me/tnetccommunity/1"
-            ),
-          ],
-        ])
-      );
+      await ctx.replyWithPhoto({ source: 'assets/results/ea_results_1.jpg' }, 
+        { caption: "📊 Here are our recent signal results showing consistent profits!" });
       break;
 
     case "examples":
       await ctx.replyWithMarkdown(
         "*📱 Signal Examples*\n\nOur signals provide precise entry, take profit, and stop loss levels for each trade."
       );
-
+      
       // Send example signal images
-      await ctx.replyWithPhoto(
-        { source: "assets/service-info/signal1.png" },
-        {
-          caption:
-            "🚀 BTC/USDT LONG\n\n▶️ Entry: 63,250-63,500\n🎯 Targets: 64,800 / 65,500 / 66,200\n🛑 Stop Loss: 62,100\n\nLeverage: 5-10x\n⏱️ Timeframe: 12-24 hours",
-        }
-      );
-
-      await ctx.replyWithPhoto(
-        { source: "assets/service-info/signal2.png" },
-        {
-          caption:
-            "📉 XAU/USDT SHORT\n\n▶️ Entry: 3,380-3,420\n🎯 Targets: 3,280 / 3,150 / 3,050\n🛑 Stop Loss: 3,520\n\nLeverage: 5-10x\n⏱️ Timeframe: 8-12 hours",
-        }
-      );
-
+      await ctx.replyWithPhoto({ source: 'assets/service-info/signal1.png' }, 
+        { caption: "🚀 BTC/USDT LONG\n\n▶️ Entry: 63,250-63,500\n🎯 Targets: 64,800 / 65,500 / 66,200\n🛑 Stop Loss: 62,100\n\nLeverage: 5-10x\n⏱️ Timeframe: 12-24 hours" });
+      
+      await ctx.replyWithPhoto({ source: 'assets/service-info/signal2.png' }, 
+        { caption: "📉 XAU/USDT SHORT\n\n▶️ Entry: 3,380-3,420\n🎯 Targets: 3,280 / 3,150 / 3,050\n🛑 Stop Loss: 3,520\n\nLeverage: 5-10x\n⏱️ Timeframe: 8-12 hours" });
+      
       // Add CTA after examples
-      await ctx.reply(
-        "Ready to receive signals like these?",
-        Markup.inlineKeyboard([
-          [
-            Markup.button.url(
-              "💰 Get Premium Signals",
-              "https://t.me/m/DvGbHx0NZTFl"
-            ),
-          ],
-        ])
-      );
+      await ctx.reply("Ready to receive signals like these?", Markup.inlineKeyboard([
+        [Markup.button.url('💰 Get Premium Signals', 'https://t.me/m/DvGbHx0NZTFl')]
+      ]));
       break;
 
     case "pricing":
@@ -228,15 +187,15 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
   switch (action) {
     case "benefits":
       await ctx.replyWithMarkdown(
-        "*🏆 EXCLUSIVE VIP PACKAGE BENEFITS 🏆*\n\n" +
-          "📈 *Premium Benefits Only Available to VIP Members:*\n\n" +
-          "• Priority access to ALL trade signals before regular users\n" +
-          "• Personal VIP account manager available 24/7\n" +
-          "• One-on-one trading strategy consultation calls\n" +
-          "• Access to proprietary trading algorithms and strategies\n" +
-          "• Entry to our exclusive VIP trading community\n" +
-          "• First access to new features and services\n\n" +
-          "*⏰ LIMITED TIME OFFER: Only 15 VIP spots remaining!*"
+        "*🏆 VIP BENEFITS 🏆*\n\n" +
+          "• Early access to ALL signals\n" +
+          "• 24/7 personal account manager\n" +
+          "• One-on-one strategy calls\n" +
+          "• Proprietary trading algorithms\n" +
+          "• Private VIP community\n" +
+          "• Priority access to new features\n\n" +
+          "*⚠️ LIMITED: Only 15 VIP spots left!*\n" +
+          "*⏰ Secure your spot now!*"
       );
 
       // Add CTA button
@@ -258,10 +217,7 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
       try {
         // Send text testimonials first
         await ctx.replyWithMarkdown(
-          "*💰 VIP MEMBERS SUCCESS STORIES 💰*\n\n" +
-            "💬 *Alex P.* - _\"Since joining the VIP program, my trading has completely transformed. I'm consistently making $5,000+ weekly following the VIP signals. Best investment I've ever made.\"_\n\n" +
-            '💬 *Jennifer K.* - _"The personal coaching alone is worth 10x what I paid. My account has grown 320% in just 2 months with the VIP team guiding me."_\n\n' +
-            '💬 *Marcus T.* - _"The exclusive VIP signals have been incredible - 97% win rate last month and I\'ve already made back my investment 8 times over!"_'
+          ""
         );
 
         // Send performance images
@@ -285,8 +241,8 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
         // Final CTA
         await ctx.replyWithMarkdown(
           "*🔥 SPECIAL VIP OFFER - 50% DISCOUNT TODAY ONLY! 🔥*\n\n" +
-            "Regular price: ~~$1,000/month~~\n" +
-            "Limited time offer: *$497 LIFETIME ACCESS*\n\n" +
+            "Regular price: ~~$3,000/month~~\n" +
+            "Limited time offer: *$1,999 LIFETIME ACCESS*\n\n" +
             "*⚠️ ONLY 15 SPOTS REMAINING AT THIS PRICE ⚠️*",
           {
             reply_markup: {
@@ -325,12 +281,12 @@ async function handleVIPAction(ctx: Context, action: string): Promise<void> {
           "• Lifetime access to premium educational materials\n" +
           "• Early access to our proprietary trading tools\n" +
           "• Direct line to our top analysts\n\n" +
-          "*💎 Value: Over $5,000 - Available now for just $497!*"
+          "*💎 Value: Over $5,000 - Available now for just $1,999!*"
       );
 
       // Add image and CTA
       await ctx.replyWithPhoto(
-        { source: "assets/service-info/vip_benefits.jpg" },
+        { source: "assets/service-info/vip_benefits.png" },
         {
           caption:
             "VIP members average 3.5x higher returns than standard users!",
