@@ -43,6 +43,9 @@ RUN npm ci --omit=dev && \
 # Copy built app from builder stage
 COPY --from=builder /app/dist ./dist
 
+# Copy assets folder
+COPY assets ./assets
+
 # Expose port if using webhook
 # EXPOSE 3000
 
