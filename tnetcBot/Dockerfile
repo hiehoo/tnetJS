@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY tsconfig.json ./
@@ -30,7 +30,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev && \
+RUN npm install --omit=dev && \
     # Clean npm cache
     npm cache clean --force && \
     # Add sqlite dependencies for better-sqlite3
