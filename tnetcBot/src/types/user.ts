@@ -1,8 +1,13 @@
 export enum EntryPoint {
-  DEFAULT = "default",
-  EA_CAMPAIGN = "ea_campaign",
-  SIGNAL_CAMPAIGN = "signal_campaign",
-  VIP_CAMPAIGN = "vip_campaign",
+  DEFAULT = "telegram_ads",
+  FACEBOOK_ADS = "facebook_ads",
+  TELEGRAM_ADS = "telegram_ads",
+  GOOGLE_ADS = "google_ads",
+  YOUTUBE_ADS = "youtube_ads",
+  INSTAGRAM_ADS = "instagram_ads",
+  TIKTOK_ADS = "tiktok_ads",
+  X_ADS = "x_ads",
+  ADSGRAM = "adsgram",
 }
 
 export enum ServiceType {
@@ -20,7 +25,6 @@ export enum UserState {
   TESTIMONIAL_SHOWN = "testimonial_shown",
   PRICING_SHOWN = "pricing_shown",
   PURCHASED = "purchased",
-  SETUP_COMPLETE = "setup_complete",
 }
 
 export interface UserData {
@@ -39,4 +43,5 @@ export interface UserData {
   purchasedServices?: ServiceType[];
   createdAt?: Date;
   updatedAt?: Date;
+  source?: string;
 }

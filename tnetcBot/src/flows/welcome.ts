@@ -7,7 +7,10 @@ import { Markup } from "telegraf";
 /**
  * Handle the welcome flow for new users
  */
-export async function handleWelcomeFlow(ctx: Context): Promise<void> {
+export async function handleWelcomeFlow(
+  ctx: Context,
+  source: EntryPoint
+): Promise<void> {
   try {
     // Ensure we have user information from the context
     if (!ctx.from) {
@@ -32,7 +35,8 @@ export async function handleWelcomeFlow(ctx: Context): Promise<void> {
             EntryPoint.DEFAULT,
             ctx.from.username,
             ctx.from.first_name,
-            ctx.from.last_name
+            ctx.from.last_name,
+            source
           );
         } else {
           throw error; // Re-throw if it's a different error
@@ -68,7 +72,8 @@ export async function handleWelcomeFlow(ctx: Context): Promise<void> {
           EntryPoint.DEFAULT,
           ctx.from.username,
           ctx.from.first_name,
-          ctx.from.last_name
+          ctx.from.last_name,
+          source
         );
         // Send welcome message with services keyboard
         const welcomeMessage = MessageTemplates.getWelcomeMessage(user);

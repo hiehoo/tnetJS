@@ -1,4 +1,4 @@
-import { EntryPoint } from '../types';
+import { EntryPoint } from "../types";
 
 /**
  * Utility class for helper functions
@@ -6,10 +6,14 @@ import { EntryPoint } from '../types';
 export class Helpers {
   /**
    * Extract entry point from a message
-   * Always returns DEFAULT entry point to show the standard greeting
+   * Format: /start source_name
+   * Example: /start facebook_ads
    */
   static getEntryPointFromMessage(message: string): EntryPoint {
-    return EntryPoint.DEFAULT;
+    // Default entry point
+    let entryPoint = EntryPoint.DEFAULT;
+
+    return entryPoint;
   }
 
   /**
@@ -17,7 +21,7 @@ export class Helpers {
    * Format: action:param (e.g., "service:ea_bot" or "ea:results")
    */
   static parseCallbackData(data: string): { action: string; param: string } {
-    const [action, param] = data.split(':');
+    const [action, param] = data.split(":");
     return { action, param };
   }
 
@@ -40,11 +44,11 @@ export class Helpers {
    * Format currency number
    */
   static formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   }
 
@@ -59,17 +63,17 @@ export class Helpers {
    * Sanitize input to prevent injection attacks
    */
   static sanitizeInput(input: string): string {
-    return input
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   /**
    * Generate a unique ID (used for campaign IDs, etc.)
    */
   static idGenerator(): string {
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
   }
 
   /**
@@ -93,10 +97,10 @@ export class Helpers {
       "⏰ *OFFER ENDING SOON!* ⏰",
       "⚠️ *Last chance before price increase!* ⚠️",
       "🔥 *This week only - Don't miss out!* 🔥",
-      "⏱️ *Limited time offer - Act now!* ⏱️"
+      "⏱️ *Limited time offer - Act now!* ⏱️",
     ];
-    
+
     const randomIndex = Math.floor(Math.random() * messages.length);
     return messages[randomIndex];
   }
-} 
+}

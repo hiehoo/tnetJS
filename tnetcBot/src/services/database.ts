@@ -12,7 +12,12 @@ import fs from "fs";
 
 // SQLite database implementation
 class DatabaseService {
-  private db: Database.Database;
+  public db: Database.Database;
+
+  // Add public getter for migrations
+  public get database(): Database.Database {
+    return this.db;
+  }
 
   constructor() {
     // Create data directory if it doesn't exist
@@ -183,7 +188,8 @@ class DatabaseService {
     entryPoint: EntryPoint = EntryPoint.DEFAULT,
     username?: string,
     firstName?: string,
-    lastName?: string
+    lastName?: string,
+    source: EntryPoint = EntryPoint.DEFAULT
   ): Promise<UserData> {
     const now = Date.now();
     const nowDate = new Date();
@@ -194,8 +200,8 @@ class DatabaseService {
       INSERT INTO users (
         id, username, firstName, lastName, entryPoint, 
         state, lastVisit, lastActive, services, campaignId,
-        testimonialsSent, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        testimonialsSent, createdAt, updatedAt, source
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     // Execute insert
@@ -212,7 +218,8 @@ class DatabaseService {
       campaignId,
       0,
       nowDate.toISOString(),
-      nowDate.toISOString()
+      nowDate.toISOString(),
+      source
     );
 
     // Return the created user
@@ -231,6 +238,7 @@ class DatabaseService {
       purchasedServices: [],
       createdAt: nowDate,
       updatedAt: nowDate,
+      source,
     };
 
     return userData;
