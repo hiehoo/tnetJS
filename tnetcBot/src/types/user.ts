@@ -25,6 +25,9 @@ export enum UserState {
   TESTIMONIAL_SHOWN = "testimonial_shown",
   PRICING_SHOWN = "pricing_shown",
   PURCHASED = "purchased",
+  IN_SALE_PROCESS = "in_sale_process",
+  REF_REGISTERED = "ref_registered",
+  FUNDED = "funded",
 }
 
 export interface UserData {

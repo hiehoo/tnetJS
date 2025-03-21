@@ -189,7 +189,8 @@ class DatabaseService {
     username?: string,
     firstName?: string,
     lastName?: string,
-    source: EntryPoint = EntryPoint.DEFAULT
+    source: EntryPoint = EntryPoint.DEFAULT,
+    state: UserState = UserState.NEW
   ): Promise<UserData> {
     const now = Date.now();
     const nowDate = new Date();
@@ -211,7 +212,7 @@ class DatabaseService {
       firstName || null,
       lastName || null,
       entryPoint,
-      UserState.NEW,
+      state,
       now,
       nowDate.toISOString(),
       JSON.stringify([]),
@@ -229,7 +230,7 @@ class DatabaseService {
       firstName,
       lastName,
       entryPoint,
-      state: UserState.NEW,
+      state,
       lastVisit: now,
       services: [],
       campaignId,

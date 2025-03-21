@@ -1,3 +1,4 @@
+import { TelegramClient } from "telegram";
 import { EntryPoint } from "../types";
 
 /**
@@ -102,5 +103,13 @@ export class Helpers {
 
     const randomIndex = Math.floor(Math.random() * messages.length);
     return messages[randomIndex];
+  }
+
+  static async getUserIdFromUsername(
+    username: string,
+    telegramClient: TelegramClient
+  ): Promise<string> {
+    const user = await telegramClient.getEntity(username);
+    return user.id.toString();
   }
 }

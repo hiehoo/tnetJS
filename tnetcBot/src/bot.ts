@@ -79,42 +79,47 @@ bot.catch((err: unknown, ctx) => {
 
 // Start the bot
 export function startBot() {
-  console.log("Starting bot...");
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log("Starting bot...");
 
-  if (USE_WEBHOOK) {
-    // Set up webhook for production
-    bot
-      .launch({
-        webhook: {
-          domain: WEBHOOK_DOMAIN,
-          port: WEBHOOK_PORT,
-        },
-      })
-      .then(() => {
-        console.log(`Bot started with webhook on port ${WEBHOOK_PORT}`);
-      })
-      .catch((err) => {
-        console.error("Failed to start bot with webhook:", err);
-      });
-  } else {
-    // Use polling for development
-    bot
-      .launch()
-      .then(() => {
-        console.log("Bot started with polling");
-      })
-      .catch((err) => {
-        console.error("Failed to start bot with polling:", err);
-      });
-  }
+      if (USE_WEBHOOK) {
+        // Set up webhook for production
+        await bot.launch(
+          {
+            webhook: {
+              domain: WEBHOOK_DOMAIN,
+              port: WEBHOOK_PORT,
+            },
+          },
+          () => {
+            console.log("Bot started with webhook");
+            resolve(true);
+          }
+        );
+        console.log("Bot started with webhook");
+      } else {
+        // Use polling for development
+        console.log("Starting bot with polling");
 
-  // Enable graceful stop
-  process.once("SIGINT", () => {
-    bot.stop("SIGINT");
-    database.closeConnection();
-  });
-  process.once("SIGTERM", () => {
-    bot.stop("SIGTERM");
-    database.closeConnection();
+        await bot.launch(() => {
+          console.log("Bot started with polling");
+          resolve(true);
+        });
+        // console.log("Bot started with polling");
+      }
+    } catch (error) {
+      console.error("Error starting bot:", error);
+      reject(error);
+    }
+    // Enable graceful stop
+    process.once("SIGINT", () => {
+      bot.stop("SIGINT");
+      database.closeConnection();
+    });
+    process.once("SIGTERM", () => {
+      bot.stop("SIGTERM");
+      database.closeConnection();
+    });
   });
 }
